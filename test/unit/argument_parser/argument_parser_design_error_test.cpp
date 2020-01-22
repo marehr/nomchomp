@@ -7,7 +7,7 @@
 
 #include <gtest/gtest.h>
 
-#include <seqan3/argument_parser/all.hpp>
+// #include <seqan3/argument_parser/all.hpp>
 
 TEST(design_error, app_name_validation)
 {
