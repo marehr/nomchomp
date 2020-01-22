@@ -9,8 +9,9 @@
 
 #include <fstream>
 
-// #include <seqan3/argument_parser/all.hpp>
-// #include <seqan3/alphabet/all.hpp>
+#include <seqan3/alphabet/adaptation/char.hpp>
+#include <seqan3/alphabet/adaptation/uint.hpp>
+#include <seqan3/argument_parser/argument_parser.hpp>
 #include <seqan3/core/char_operations/predicate.hpp>
 #include <seqan3/range/views/persist.hpp>
 #include <seqan3/range/views/take.hpp>
