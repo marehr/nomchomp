@@ -373,13 +373,17 @@ protected:
         std::string drop_less_ext = path.extension().string().substr(1);
 
         // Compares the extensions in lower case.
-        auto cmp_lambda = [&] (std::string const & cmp)
+        auto case_insensitive_cmp = [&] (std::string const & ext)
         {
-            return std::ranges::equal(cmp | views::to_lower, drop_less_ext | views::to_lower);
+            return ext.size() == drop_less_ext.size() &&
+                   std::equal(ext.begin(), ext.end(), drop_less_ext.begin(), [](auto && chr1, auto && chr2)
+                   {
+                       return std::tolower(chr1) == std::tolower(chr2);
+                   });
         };
 
         // Check if requested extension is present.
-        if (std::ranges::find_if(extensions, cmp_lambda) == extensions.end())
+        if (std::ranges::find_if(extensions, case_insensitive_cmp) == extensions.end())
         {
             throw validation_error{detail::to_string("Expected one of the following valid extensions: ",
                                                              extensions, "! Got ", drop_less_ext, " instead!")};
