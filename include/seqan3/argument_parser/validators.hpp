@@ -25,7 +25,6 @@
 #include <seqan3/io/detail/misc.hpp>
 #include <seqan3/io/detail/safe_filesystem_entry.hpp>
 #include <seqan3/range/container/concept.hpp>
-#include <seqan3/range/views/drop.hpp>
 #include <seqan3/range/views/join.hpp>
 #include <seqan3/range/views/to_lower.hpp>
 #include <seqan3/std/algorithm>
