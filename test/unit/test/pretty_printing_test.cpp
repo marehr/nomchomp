@@ -10,10 +10,10 @@
 #include <ostream>
 #include <variant>
 
-#include <seqan3/alphabet/nucleotide/dna4.hpp>
+#include <seqan3/alphabet/nucleotide/dna5.hpp>
 #include <seqan3/test/pretty_printing.hpp>
 
-using seqan3::operator""_dna4;
+using seqan3::operator""_dna5;
 using namespace std::string_literals;
 
 // Returns a string as gtest would print the given value.
@@ -59,22 +59,22 @@ TEST(pretty_printing, std_output)
 TEST(pretty_printing, seqan3_output)
 {
     // seqan3 types should always produce the same result
-    EXPECT_EQ(gtest_str('G'_dna4), "G"s);
-    EXPECT_EQ(debug_str('G'_dna4), "G"s);
-    EXPECT_EQ('G'_dna4, 'G'_dna4); // change value to test
+    EXPECT_EQ(gtest_str('G'_dna5), "G"s);
+    EXPECT_EQ(debug_str('G'_dna5), "G"s);
+    EXPECT_EQ('G'_dna5, 'G'_dna5); // change value to test
 
-    EXPECT_EQ(gtest_str("ACGTCGA"_dna4), "ACGTCGA"s);
-    EXPECT_EQ(debug_str("ACGTCGA"_dna4), "ACGTCGA"s);
-    EXPECT_EQ("ACGTCGA"_dna4, "ACGTCGA"_dna4); // change value to test
+    EXPECT_EQ(gtest_str("ACGTCGA"_dna5), "ACGTCGA"s);
+    EXPECT_EQ(debug_str("ACGTCGA"_dna5), "ACGTCGA"s);
+    EXPECT_EQ("ACGTCGA"_dna5, "ACGTCGA"_dna5); // change value to test
 
-    std::vector dna_set1{"AC"_dna4, "GT"_dna4, "CG"_dna4, "A"_dna4};
-    std::vector dna_set2{"AC"_dna4, "GT"_dna4, "CG"_dna4, "A"_dna4};
+    std::vector dna_set1{"AC"_dna5, "GT"_dna5, "CG"_dna5, "A"_dna5};
+    std::vector dna_set2{"AC"_dna5, "GT"_dna5, "CG"_dna5, "A"_dna5};
     EXPECT_EQ(gtest_str(dna_set1), "[AC,GT,CG,A]"s);
     EXPECT_EQ(debug_str(dna_set1), "[AC,GT,CG,A]"s);
     EXPECT_EQ(dna_set1, dna_set2); // change value to test
 
-    std::vector dna_sets1{std::vector{"AC"_dna4, "GT"_dna4}, std::vector{"CG"_dna4, "A"_dna4}};
-    std::vector dna_sets2{std::vector{"AC"_dna4, "GT"_dna4}, std::vector{"CG"_dna4, "A"_dna4}};
+    std::vector dna_sets1{std::vector{"AC"_dna5, "GT"_dna5}, std::vector{"CG"_dna5, "A"_dna5}};
+    std::vector dna_sets2{std::vector{"AC"_dna5, "GT"_dna5}, std::vector{"CG"_dna5, "A"_dna5}};
     EXPECT_EQ(gtest_str(dna_sets1), "[[AC,GT],[CG,A]]"s);
     EXPECT_EQ(debug_str(dna_sets1), "[[AC,GT],[CG,A]]"s);
     EXPECT_EQ(dna_sets1, dna_sets2); // change value to test
@@ -83,14 +83,14 @@ TEST(pretty_printing, seqan3_output)
 TEST(pretty_printing, gtest_mixed_seqan3_output)
 {
     // warning: these outputs can change due to changes in gtest
-    auto dna_tuple1 = std::make_tuple('A'_dna4, 'C'_dna4);
-    auto dna_tuple2 = std::make_tuple('A'_dna4, 'C'_dna4);
+    auto dna_tuple1 = std::make_tuple('A'_dna5, 'C'_dna5);
+    auto dna_tuple2 = std::make_tuple('A'_dna5, 'C'_dna5);
     EXPECT_EQ(gtest_str(dna_tuple1), "(A, C)"s);
     EXPECT_EQ(debug_str(dna_tuple1), "(A,C)"s);
     EXPECT_EQ(dna_tuple1, dna_tuple2); // change value to test
 
-    auto dna_sequence_tuple1 = std::make_tuple("AC"_dna4, "GT"_dna4);
-    auto dna_sequence_tuple2 = std::make_tuple("AC"_dna4, "GT"_dna4);
+    auto dna_sequence_tuple1 = std::make_tuple("AC"_dna5, "GT"_dna5);
+    auto dna_sequence_tuple2 = std::make_tuple("AC"_dna5, "GT"_dna5);
     EXPECT_EQ(gtest_str(dna_sequence_tuple1), "(AC, GT)"s);
     EXPECT_EQ(debug_str(dna_sequence_tuple1), "(AC,GT)"s);
     EXPECT_EQ(dna_sequence_tuple1, dna_sequence_tuple2); // change value to test
