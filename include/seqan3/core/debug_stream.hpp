@@ -14,12 +14,8 @@
 
 #include <iostream>
 
-#include <seqan3/core/detail/debug_stream_alphabet.hpp>
-#include <seqan3/core/detail/debug_stream_optional.hpp>
 #include <seqan3/core/detail/debug_stream_range.hpp>
-#include <seqan3/core/detail/debug_stream_tuple.hpp>
 #include <seqan3/core/detail/debug_stream_type.hpp>
-#include <seqan3/core/detail/debug_stream_variant.hpp>
 
 // forward declare
 //!\cond
