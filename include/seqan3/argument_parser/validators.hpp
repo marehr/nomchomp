@@ -16,6 +16,7 @@
 #include <fstream>
 #include <sstream>
 
+#include <seqan3/argument_parser/auxiliary.hpp>
 #include <seqan3/argument_parser/exceptions.hpp>
 #include <seqan3/core/concept/core_language.hpp>
 #include <seqan3/core/detail/to_string.hpp>
@@ -33,6 +34,32 @@
 namespace seqan3::detail
 {
 
+template <typename value_type>
+std::stringstream & stringify(std::stringstream & stream, value_type && value)
+{
+    stream << value;
+    return stream;
+}
+
+template <typename option_type>
+//!\cond
+    requires named_enumeration<remove_cvref_t<option_type>>
+//!\endcond
+std::stringstream & stringify(std::stringstream & stream, option_type && op)
+{
+    for (auto & [key, value] : enumeration_names<option_type>)
+    {
+        if (op != value)
+            continue;
+
+        stream << key;
+        return stream;
+    }
+
+    stream << "<UNKNOWN_VALUE>";
+    return stream;
+}
+
 template <typename string_range_t>
 std::string join_strings(string_range_t strings, std::string delim)
 {
@@ -42,6 +69,14 @@ std::string join_strings(string_range_t strings, std::string delim)
     if (join.size() >= delim.size()) // remove last delimiter
         join.erase(join.size() - delim.size());
     return join;
+}
+
+template <typename ...value_type>
+std::string as_string(value_type && ...values)
+{
+    std::stringstream stream{};
+    (stringify(stream, std::forward<value_type>(values)), ...);
+    return stream.str();
 }
 
 } // namespace seqan3::detail
@@ -138,8 +173,10 @@ public:
      */
     void operator()(option_value_type const & cmp) const
     {
-        if (!((cmp <= max) && (cmp >= min)))
-            throw validation_error{detail::to_string("Value ", cmp, " is not in range [", min, ",", max, "].")};
+        if (min <= cmp && cmp <= max)
+            return;
+
+        throw validation_error{detail::as_string("Value ", cmp, " is not in range [", min, ",", max, "].")};
     }
 
     /*!\brief Tests whether every element in \p range lies inside [`min`, `max`].
@@ -160,7 +197,7 @@ public:
     //!\brief Returns a message that can be appended to the (positional) options help page info.
     std::string get_help_page_message() const
     {
-        return detail::to_string("Value must be in range [", min, ",", max, "].");
+        return detail::as_string("Value must be in range [", min, ",", max, "].");
     }
 
 private:
@@ -241,8 +278,10 @@ public:
      */
     void operator()(option_value_type const & cmp) const
     {
-        if (!(std::find(values.begin(), values.end(), cmp) != values.end()))
-            throw validation_error{detail::to_string("Value ", cmp, " is not one of ", std::views::all(values), ".")};
+        if (std::find(values.begin(), values.end(), cmp) != values.end())
+            return;
+
+        throw validation_error{detail::as_string("Value ", cmp, " is not one of [", values_str(), "].")};
     }
 
     /*!\brief Tests whether every element in \p range lies inside values.
@@ -262,10 +301,18 @@ public:
     //!\brief Returns a message that can be appended to the (positional) options help page info.
     std::string get_help_page_message() const
     {
-        return detail::to_string("Value must be one of ", std::views::all(values), ".");
+        return detail::as_string("Value must be one of [", values_str(), "].");
     }
 
 private:
+
+    inline std::string values_str() const
+    {
+        return detail::join_strings(values | std::views::transform([](auto && value)
+        {
+            return detail::as_string(std::forward<decltype(value)>(value));
+        }), ",");
+    }
 
     //!\brief Minimum of the range to test.
     std::vector<option_value_type> values{};
@@ -379,9 +426,9 @@ protected:
 
         // Check if extension is available.
         if (!path.has_extension())
-            throw validation_error{detail::to_string("The given filename ", path.string(),
-                                                            " has no extension. Expected one of the following valid"
-                                                            " extensions:", extensions, "!")};
+            throw validation_error{detail::as_string("The given filename ", path.string(),
+                                                     " has no extension. Expected one of the following valid"
+                                                     " extensions:", detail::join_strings(extensions, ""), "!")};
 
         // Drop the dot.
         std::string drop_less_ext = path.extension().string().substr(1);
@@ -399,8 +446,9 @@ protected:
         // Check if requested extension is present.
         if (std::ranges::find_if(extensions, case_insensitive_cmp) == extensions.end())
         {
-            throw validation_error{detail::to_string("Expected one of the following valid extensions: ",
-                                                             extensions, "! Got ", drop_less_ext, " instead!")};
+            throw validation_error{detail::as_string("Expected one of the following valid extensions: ",
+                                                     detail::join_strings(extensions, ""), "! ",
+                                                     "Got ", drop_less_ext, " instead!")};
         }
     }
 
@@ -418,17 +466,17 @@ protected:
             std::error_code ec{};
             std::filesystem::directory_iterator{path, ec};  // if directory iterator cannot be created, ec will be set.
             if (static_cast<bool>(ec))
-                throw validation_error{detail::to_string("Cannot read the directory ", path ,"!")};
+                throw validation_error{detail::as_string("Cannot read the directory ", path ,"!")};
         }
         else
         {
             // Must be a regular file.
             if (!std::filesystem::is_regular_file(path))
-                throw validation_error{detail::to_string("Expected a regular file ", path, "!")};
+                throw validation_error{detail::as_string("Expected a regular file ", path, "!")};
 
             std::ifstream file{path};
             if (!file.is_open() || !file.good())
-                throw validation_error{detail::to_string("Cannot read the file ", path, "!")};
+                throw validation_error{detail::as_string("Cannot read the file ", path, "!")};
         }
     }
 
@@ -448,7 +496,7 @@ protected:
         file.close();
 
         if (!is_good || !is_open)
-            throw validation_error{detail::to_string("Cannot write ", path, "!")};
+            throw validation_error{detail::as_string("Cannot write ", path, "!")};
 
         file_guard.remove();
     }
@@ -548,7 +596,7 @@ public:
         try
         {
             if (!std::filesystem::exists(file))
-                throw validation_error{detail::to_string("The file ", file, " does not exist!")};
+                throw validation_error{detail::as_string("The file ", file, " does not exist!")};
 
             // Check if file is regular and can be opened for reading.
             validate_readability(file);
@@ -569,7 +617,7 @@ public:
     //!\brief Returns a message that can be appended to the (positional) options help page info.
     std::string get_help_page_message() const
     {
-        return detail::to_string("Valid input file formats: [",
+        return detail::as_string("Valid input file formats: [",
                                  detail::join_strings(extensions, std::string{", "}),
                                  "]");
     }
@@ -652,7 +700,7 @@ public:
         try
         {
             if (std::filesystem::exists(file))
-                throw validation_error{detail::to_string("The file ", file, " already exists!")};
+                throw validation_error{detail::as_string("The file ", file, " already exists!")};
 
             // Check if file has any write permissions.
             validate_writeability(file);
@@ -672,7 +720,7 @@ public:
     //!\brief Returns a message that can be appended to the (positional) options help page info.
     std::string get_help_page_message() const
     {
-        return detail::to_string("Valid output file formats: [",
+        return detail::as_string("Valid output file formats: [",
                                  detail::join_strings(extensions, std::string{", "}),
                                  "]");
     }
@@ -725,10 +773,10 @@ public:
         try
         {
             if (!std::filesystem::exists(dir))
-                throw validation_error{detail::to_string("The directory ", dir, " does not exists!")};
+                throw validation_error{detail::as_string("The directory ", dir, " does not exists!")};
 
             if (!std::filesystem::is_directory(dir))
-                throw validation_error{detail::to_string("The path ", dir, " is not a directory!")};
+                throw validation_error{detail::as_string("The path ", dir, " is not a directory!")};
 
             // Check if directory has any read permissions.
             validate_readability(dir);
@@ -746,7 +794,7 @@ public:
     //!\brief Returns a message that can be appended to the (positional) options help page info.
     std::string get_help_page_message() const
     {
-        return detail::to_string("An existing, readable path for the input directory.");
+        return detail::as_string("An existing, readable path for the input directory.");
     }
 };
 
@@ -800,7 +848,7 @@ public:
         std::filesystem::create_directory(dir, ec); // does nothing and is not treated as error if path already exists.
         // if error code was set or if dummy.txt could not be created within the output dir, throw an error.
         if (static_cast<bool>(ec))
-            throw validation_error{detail::to_string("Cannot create directory: ", dir, "!")};
+            throw validation_error{detail::as_string("Cannot create directory: ", dir, "!")};
 
         try
         {
@@ -828,7 +876,7 @@ public:
     //!\brief Returns a message that can be appended to the (positional) options help page info.
     std::string get_help_page_message() const
     {
-        return detail::to_string("A valid path for the output directory.");
+        return detail::as_string("A valid path for the output directory.");
     }
 };
 
@@ -870,7 +918,7 @@ public:
     {
         std::regex rgx(pattern);
         if (!std::regex_match(cmp, rgx))
-            throw validation_error{detail::to_string("Value ", cmp, " did not match the pattern ", pattern, ".")};
+            throw validation_error{detail::as_string("Value ", cmp, " did not match the pattern ", pattern, ".")};
     }
 
     /*!\brief Tests whether every filename in list v matches the pattern.
@@ -891,7 +939,7 @@ public:
     //!\brief Returns a message that can be appended to the (positional) options help page info.
     std::string get_help_page_message() const
     {
-        return detail::to_string("Value must match the pattern '", pattern, "'.");
+        return detail::as_string("Value must match the pattern '", pattern, "'.");
     }
 
 private:
@@ -992,7 +1040,7 @@ public:
     //!\brief Returns a message that can be appended to the (positional) options help page info.
     std::string get_help_page_message() const
     {
-        return detail::to_string(vali1.get_help_page_message(), " ", vali2.get_help_page_message());
+        return detail::as_string(vali1.get_help_page_message(), " ", vali2.get_help_page_message());
     }
 
 private:
