@@ -32,25 +32,30 @@ const char * argv1[] = {"./help_add_test --version-check 0", "-h"};
 const char * argv2[] = {"./help_add_test --version-check 0", "-hh"};
 const char * argv3[] = {"./help_add_test --version-check 0", "--version"};
 
-std::string const basic_options_str = "OPTIONS"
-                                      "Basic options:"
-                                      "-h, --help Prints the help page."
-                                      "-hh, --advanced-help Prints the help page including advanced options."
-                                      "--version Prints the version information."
-                                      "--copyright Prints the copyright/license information."
-                                      "--export-help (std::string) Export the help page information. "
-                                                                   "Value must be one of [html, man]."
-                                      "--version-check (bool)"
-                                                "Whether to to check for the newest app version. Default: 1.";
+std::string const basic_options_str = "OPTIONS\n"
+                                      "\n"
+                                      "  Basic options:\n"
+                                      "    -h, --help\n"
+                                      "          Prints the help page.\n"
+                                      "    -hh, --advanced-help\n"
+                                      "          Prints the help page including advanced options.\n"
+                                      "    --version\n"
+                                      "          Prints the version information.\n"
+                                      "    --copyright\n"
+                                      "          Prints the copyright/license information.\n"
+                                      "    --export-help (std::string)\n"
+                                      "          Export the help page information. Value must be one of [html, man].\n"
+                                      "    --version-check (bool)\n"
+                                      "          Whether to to check for the newest app version. Default: 1.\n";
 
 std::string const version_str = std::to_string(SEQAN3_VERSION_MAJOR) + "."
                                 + std::to_string(SEQAN3_VERSION_MINOR) + "."
                                 + std::to_string(SEQAN3_VERSION_PATCH);
 
-std::string const basic_version_str = "VERSION"
-                                      "Last update:"
-                                      "test_parser version:"
-                                      "SeqAn version: " + version_str;
+std::string const basic_version_str = "VERSION\n"
+                                      "    Last update: \n"
+                                      "    test_parser version: \n"
+                                      "    SeqAn version: " + version_str + "\n";
 
 TEST(help_page_printing, short_help)
 {
@@ -60,12 +65,12 @@ TEST(help_page_printing, short_help)
     testing::internal::CaptureStdout();
     EXPECT_EXIT(parser0.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
     std_cout = testing::internal::GetCapturedStdout();
-    expected = "empty_options"
-               "============="
-               "./some_binary_name synopsis"
-               "Try -h or --help for more information.";
-    EXPECT_TRUE(ranges::equal((std_cout | std::views::filter(!seqan3::is_space)),
-                              expected | std::views::filter(!seqan3::is_space)));
+
+    expected = "empty_options\n"
+               "=============\n"
+               "    ./some_binary_name synopsis\n"
+               "    Try -h or --help for more information.\n";
+    EXPECT_EQ(std_cout, expected);
 }
 
 TEST(help_page_printing, no_information)
@@ -75,12 +80,15 @@ TEST(help_page_printing, no_information)
     testing::internal::CaptureStdout();
     EXPECT_EXIT(parser1.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
     std_cout = testing::internal::GetCapturedStdout();
-    expected = "test_parser"
-               "===========" +
+    expected = "test_parser\n"
+               "===========\n"
+               "\n" +
                basic_options_str +
+               "\n"
+               "  \n"
+               "\n" +
                basic_version_str;
-    EXPECT_TRUE(ranges::equal((std_cout | std::views::filter(!seqan3::is_space)),
-                              expected | std::views::filter(!seqan3::is_space)));
+    EXPECT_EQ(std_cout, expected);
 }
 
 TEST(help_page_printing, with_short_copyright)
@@ -91,15 +99,19 @@ TEST(help_page_printing, with_short_copyright)
     testing::internal::CaptureStdout();
     EXPECT_EXIT(short_copy.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
     std_cout = testing::internal::GetCapturedStdout();
-    expected = "test_parser"
-               "===========" +
+    expected = "test_parser\n"
+               "===========\n"
+               "\n" +
                basic_options_str +
+               "\n"
+               "  \n"
+               "\n" +
                basic_version_str +
-               "LEGAL"
-               "test_parser Copyright: short"
-               "SeqAn Copyright: 2006-2015 Knut Reinert, FU-Berlin; released under the 3-clause BSDL.";
-    EXPECT_TRUE(ranges::equal((std_cout | std::views::filter(!seqan3::is_space)),
-                              expected | std::views::filter(!seqan3::is_space)));
+               "\n" +
+               "LEGAL\n"
+               "    test_parser Copyright: short\n"
+               "    SeqAn Copyright: 2006-2015 Knut Reinert, FU-Berlin; released under the 3-clause BSDL.\n";
+    EXPECT_EQ(std_cout, expected);
 }
 
 TEST(help_page_printing, with_long_copyright)
@@ -109,15 +121,19 @@ TEST(help_page_printing, with_long_copyright)
     testing::internal::CaptureStdout();
     EXPECT_EXIT(long_copy.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
     std_cout = testing::internal::GetCapturedStdout();
-    expected = "test_parser"
-               "===========" +
+    expected = "test_parser\n"
+               "===========\n"
+               "\n" +
                basic_options_str +
+               "\n"
+               "  \n"
+               "\n" +
                basic_version_str +
-               "LEGAL"
-               "SeqAn Copyright: 2006-2015 Knut Reinert, FU-Berlin; released under the 3-clause BSDL."
-               "For full copyright and/or warranty information see --copyright.";
-    EXPECT_TRUE(ranges::equal((std_cout | std::views::filter(!seqan3::is_space)),
-                              expected | std::views::filter(!seqan3::is_space)));
+               "\n" +
+               "LEGAL\n"
+               "    SeqAn Copyright: 2006-2015 Knut Reinert, FU-Berlin; released under the 3-clause BSDL.\n"
+               "    For full copyright and/or warranty information see --copyright.\n";
+    EXPECT_EQ(std_cout, expected);
 }
 
 TEST(help_page_printing, with_citation)
@@ -127,15 +143,19 @@ TEST(help_page_printing, with_citation)
     testing::internal::CaptureStdout();
     EXPECT_EXIT(citation.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
     std_cout = testing::internal::GetCapturedStdout();
-    expected = "test_parser"
-               "===========" +
+    expected = "test_parser\n"
+               "===========\n"
+               "\n" +
                basic_options_str +
+               "\n"
+               "  \n"
+               "\n" +
                basic_version_str +
-               "LEGAL"
-               "SeqAn Copyright: 2006-2015 Knut Reinert, FU-Berlin; released under the 3-clause BSDL."
-               "In your academic works please cite: citation";
-    EXPECT_TRUE(ranges::equal((std_cout | std::views::filter(!seqan3::is_space)),
-                              expected | std::views::filter(!seqan3::is_space)));
+               "\n" +
+               "LEGAL\n"
+               "    SeqAn Copyright: 2006-2015 Knut Reinert, FU-Berlin; released under the 3-clause BSDL.\n"
+               "    In your academic works please cite: citation\n";
+    EXPECT_EQ(std_cout, expected);
 }
 
 TEST(help_page_printing, empty_advanced_help)
@@ -145,12 +165,15 @@ TEST(help_page_printing, empty_advanced_help)
     testing::internal::CaptureStdout();
     EXPECT_EXIT(parser2.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
     std_cout = testing::internal::GetCapturedStdout();
-    expected = "test_parser"
-               "===========" +
+    expected = "test_parser\n"
+               "===========\n"
+               "\n" +
                basic_options_str +
+               "\n"
+               "  \n"
+               "\n" +
                basic_version_str;
-    EXPECT_TRUE(ranges::equal((std_cout | std::views::filter(!seqan3::is_space)),
-                              expected | std::views::filter(!seqan3::is_space)));
+    EXPECT_EQ(std_cout, expected);
 }
 
 TEST(help_page_printing, empty_version_call)
@@ -160,11 +183,11 @@ TEST(help_page_printing, empty_version_call)
     testing::internal::CaptureStdout();
     EXPECT_EXIT(parser3.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
     std_cout = testing::internal::GetCapturedStdout();
-    expected = "test_parser"
-               "===========" +
+    expected = "test_parser\n"
+               "===========\n"
+               "\n" +
                basic_version_str;
-    EXPECT_TRUE(ranges::equal((std_cout | std::views::filter(!seqan3::is_space)),
-                              expected | std::views::filter(!seqan3::is_space)));
+    EXPECT_EQ(std_cout, expected);
 }
 
 TEST(help_page_printing, version_call)
@@ -178,13 +201,14 @@ TEST(help_page_printing, version_call)
     testing::internal::CaptureStdout();
     EXPECT_EXIT(parser4.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
     std_cout = testing::internal::GetCapturedStdout();
-    expected = "test_parser"
-               "===========" +
+    expected = "test_parser\n"
+               "===========\n"
+               "\n" +
                basic_version_str +
-               "URL"
-               "www.seqan.de";
-    EXPECT_TRUE(ranges::equal((std_cout | std::views::filter(!seqan3::is_space)),
-                              expected | std::views::filter(!seqan3::is_space)));
+               "URL\n"
+               "    www.seqan.de\n"
+               "\n";
+    EXPECT_EQ(std_cout, expected);
 }
 
 TEST(help_page_printing, do_not_print_hidden_options)
@@ -196,12 +220,15 @@ TEST(help_page_printing, do_not_print_hidden_options)
     testing::internal::CaptureStdout();
     EXPECT_EXIT(parser5.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
     std_cout = testing::internal::GetCapturedStdout();
-    expected = "test_parser"
-               "===========" +
+    expected = "test_parser\n"
+               "===========\n"
+               "\n" +
                basic_options_str +
+               "\n"
+               "  \n"
+               "\n" +
                basic_version_str;
-    EXPECT_TRUE(ranges::equal((std_cout | std::views::filter(!seqan3::is_space)),
-                              expected | std::views::filter(!seqan3::is_space)));
+    EXPECT_EQ(std_cout, expected);
 }
 
 enum class foo
@@ -247,35 +274,47 @@ TEST(help_page_printing, full_information)
     std_cout = testing::internal::GetCapturedStdout();
     expected = "test_parser - so short\n"
                "======================\n"
+               "\n"
                "SYNOPSIS\n"
-               "./some_binary_name synopsis\n"
-               "./some_binary_name synopsis2\n"
+               "    ./some_binary_name synopsis\n"
+               "    ./some_binary_name synopsis2\n"
+               "\n"
                "DESCRIPTION\n"
-               "description\n"
-               "description2\n"
+               "    description\n"
+               "\n"
+               "    description2\n"
+               "\n"
                "POSITIONAL ARGUMENTS\n"
-               "ARGUMENT-1 (signed 8 bit integer)\n"
-               "this is not a list.\n"
-               "ARGUMENT-2 (List of std::string's)\n"
-               "this is a positional option. Default: []. \n" +
+               "    ARGUMENT-1 (signed 8 bit integer)\n"
+               "          this is not a list.\n"
+               "    ARGUMENT-2 (List of std::string's)\n"
+               "          this is a positional option. Default: [].\n"
+               "\n" +
                basic_options_str +
-               "-i, --int (signed 32 bit integer)\n"
-               "this is a int option. Default: 5.\n"
-               "-e, --enum (foo)\n"
-               "this is an enum option. Default: one. Value must be one of [three,two,one].\n"
-               "-r, --required-int (signed 8 bit integer)\n"
-               "this is another int option.\n"
+               "\n"
+               "  \n"
+               "    -i, --int (signed 32 bit integer)\n"
+               "          this is a int option. Default: 5.\n"
+               "    -e, --enum (foo)\n"
+               "          this is an enum option. Default: one. Value must be one of\n"
+               "          [three,two,one].\n"
+               "    -r, --required-int (signed 8 bit integer)\n"
+               "          this is another int option.\n"
+               "\n"
                "FLAGS\n"
-               "SubFlags\n"
-               "here come all the flags\n"
-               "-f, --flag\n"
-               "this is a flag.\n"
+               "\n"
+               "  SubFlags\n"
+               "    here come all the flags\n"
+               "    -f, --flag\n"
+               "          this is a flag.\n"
+               "\n"
                "EXAMPLES\n"
-               "example\n"
-               "example2" +
+               "    example\n"
+               "\n"
+               "    example2\n"
+               "\n" +
                basic_version_str;
-    EXPECT_TRUE(ranges::equal((std_cout | std::views::filter(!seqan3::is_space)),
-                              expected | std::views::filter(!seqan3::is_space)));
+    EXPECT_EQ(std_cout, expected);
 }
 
 TEST(help_page_printing, copyright)
@@ -372,21 +411,28 @@ TEST(parse_test, subcommand_argument_parser)
 
     std::string expected = "test_parser\n"
                            "===========\n"
+                           "\n"
                            "DESCRIPTION\n"
                            "    description\n"
-                           "SUB COMMANDS\n"
+                           "\n"
+                           "SUBCOMMANDS\n"
                            "    This program must be invoked with one of the following subcommands:\n"
                            "    - sub1\n"
                            "    - sub2\n"
-                           "    See the respective help page for further details (e.g. by calling test_parser sub1 -h)."
-                           "    The following options below belong to the top-level parser and need to be specified "
-                           "    before the subcommand key word. Every argument after the subcommand key word is "
-                           "    passed on to the corresponding sub-parser.\n" +
+                           "    See the respective help page for further details (e.g. by calling\n"
+                           "    test_parser sub1 -h).\n"
+                           "\n"
+                           "    The following options below belong to the top-level parser and need to be\n"
+                           "    specified before the subcommand key word. Every argument after the\n"
+                           "    subcommand key word is passed on to the corresponding sub-parser.\n"
+                           "\n" +
                            basic_options_str +
+                           "\n"
+                           "  \n"
                            "    -f, --foo (signed 32 bit integer)\n"
-                           "    foo bar. Default: 0.\n" +
+                           "          foo bar. Default: 0.\n"
+                           "\n" +
                            basic_version_str;
 
-    EXPECT_TRUE(ranges::equal((std_cout | std::views::filter(!seqan3::is_space)),
-                              expected | std::views::filter(!seqan3::is_space)));
+    EXPECT_EQ(std_cout, expected);
 }
