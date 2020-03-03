@@ -31,6 +31,22 @@
 #include <seqan3/std/filesystem>
 #include <seqan3/std/ranges>
 
+namespace seqan3::detail
+{
+
+template <typename string_range_t>
+std::string join_strings(string_range_t strings, std::string delim)
+{
+    std::ostringstream joined{};
+    std::copy(strings.begin(), strings.end(), std::ostream_iterator<std::string>{joined, delim.c_str()});
+    std::string join = joined.str();
+    if (join.size() >= delim.size()) // remove last delimiter
+        join.erase(join.size() - delim.size());
+    return join;
+}
+
+} // namespace seqan3::detail
+
 namespace seqan3
 {
 
@@ -555,7 +571,7 @@ public:
     std::string get_help_page_message() const
     {
         return detail::to_string("Valid input file formats: [",
-                                 extensions | views::join(std::string{", "}),
+                                 detail::join_strings(extensions, std::string{", "}),
                                  "]");
     }
 };
@@ -658,7 +674,7 @@ public:
     std::string get_help_page_message() const
     {
         return detail::to_string("Valid output file formats: [",
-                                 extensions | views::join(std::string{", "}),
+                                 detail::join_strings(extensions, std::string{", "}),
                                  "]");
     }
 };
