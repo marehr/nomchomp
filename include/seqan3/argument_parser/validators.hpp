@@ -371,8 +371,7 @@ protected:
                                                             " extensions:", extensions, "!")};
 
         // Drop the dot.
-        std::string tmp_str = path.extension().string();
-        auto drop_less_ext = tmp_str | views::drop(1);
+        std::string drop_less_ext = path.extension().string().substr(1);
 
         // Compares the extensions in lower case.
         auto cmp_lambda = [&] (std::string const & cmp)
