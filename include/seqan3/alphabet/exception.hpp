@@ -15,7 +15,6 @@
 #include <stdexcept>
 #include <string>
 
-#include <seqan3/core/char_operations/pretty_print.hpp>
 #include <seqan3/std/concepts>
 
 namespace seqan3
@@ -33,7 +32,7 @@ struct invalid_char_assignment : std::runtime_error
 
     //!\overload
     invalid_char_assignment(std::string const & type_name, char const wrong_char) :
-        invalid_char_assignment{type_name, detail::make_printable(wrong_char)}
+        invalid_char_assignment{type_name, std::string{wrong_char}}
     {}
 
     //!\overload
