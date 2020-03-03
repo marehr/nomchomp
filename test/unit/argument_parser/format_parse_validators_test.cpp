@@ -10,7 +10,6 @@
 #include <fstream>
 
 #include <seqan3/argument_parser/argument_parser.hpp>
-#include <seqan3/core/char_operations/predicate.hpp>
 #include <seqan3/std/ranges>
 #include <seqan3/std/filesystem>
 #include <seqan3/test/tmp_filename.hpp>
