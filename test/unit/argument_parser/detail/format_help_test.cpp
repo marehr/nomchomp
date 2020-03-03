@@ -13,15 +13,6 @@
 #include <seqan3/argument_parser/detail/format_help.hpp>
 #include <seqan3/range/views/get.hpp>
 
-// reused global variables
-int option_value{5};
-bool flag_value{};
-std::vector<std::string> pos_opt_value{};
-const char * argv0[] = {"./help_add_test --version-check 0"};
-const char * argv1[] = {"./help_add_test --version-check 0", "-h"};
-const char * argv2[] = {"./help_add_test --version-check 0", "-hh"};
-const char * argv3[] = {"./help_add_test --version-check 0", "--version"};
-
 std::string const basic_options_str = "OPTIONS\n"
                                       "\n"
                                       "  Basic options:\n"
@@ -63,6 +54,7 @@ std::string license_text()
 TEST(help_page_printing, short_help)
 {
     // Empty call with no options given. For seqan3::detail::format_short_help
+    const char * argv0[] = {"./help_add_test --version-check 0"};
     seqan3::argument_parser parser0{"empty_options", 1, argv0};
     parser0.info.synopsis.push_back("./some_binary_name synopsis");
 
@@ -80,6 +72,7 @@ TEST(help_page_printing, short_help)
 TEST(help_page_printing, no_information)
 {
     // Empty help call with -h
+    const char * argv1[] = {"./help_add_test --version-check 0", "-h"};
     seqan3::argument_parser parser1{"test_parser", 2, argv1};
 
     testing::internal::CaptureStdout();
@@ -100,6 +93,7 @@ TEST(help_page_printing, no_information)
 TEST(help_page_printing, with_short_copyright)
 {
     // Again, but with short copyright, long copyright, and citation.
+    const char * argv1[] = {"./help_add_test --version-check 0", "-h"};
     seqan3::argument_parser short_copy("test_parser", 2, argv1);
     short_copy.info.short_copyright = "short";
 
@@ -124,6 +118,7 @@ TEST(help_page_printing, with_short_copyright)
 
 TEST(help_page_printing, with_long_copyright)
 {
+    const char * argv1[] = {"./help_add_test --version-check 0", "-h"};
     seqan3::argument_parser long_copy("test_parser", 2, argv1);
     long_copy.info.long_copyright = "long";
 
@@ -148,6 +143,7 @@ TEST(help_page_printing, with_long_copyright)
 
 TEST(help_page_printing, with_citation)
 {
+    const char * argv1[] = {"./help_add_test --version-check 0", "-h"};
     seqan3::argument_parser citation("test_parser", 2, argv1);
     citation.info.citation = "citation";
 
@@ -173,6 +169,7 @@ TEST(help_page_printing, with_citation)
 TEST(help_page_printing, empty_advanced_help)
 {
     // Empty help call with -hh
+    const char * argv2[] = {"./help_add_test --version-check 0", "-hh"};
     seqan3::argument_parser parser2{"test_parser", 2, argv2};
 
     testing::internal::CaptureStdout();
@@ -193,6 +190,7 @@ TEST(help_page_printing, empty_advanced_help)
 TEST(help_page_printing, empty_version_call)
 {
     // Empty version call
+    const char * argv3[] = {"./help_add_test --version-check 0", "--version"};
     seqan3::argument_parser parser3{"test_parser", 2, argv3};
 
     testing::internal::CaptureStdout();
@@ -209,6 +207,11 @@ TEST(help_page_printing, empty_version_call)
 TEST(help_page_printing, version_call)
 {
     // Version call with url and options.
+    int option_value{5};
+    bool flag_value{};
+    std::vector<std::string> pos_opt_value{};
+
+    const char * argv3[] = {"./help_add_test --version-check 0", "--version"};
     seqan3::argument_parser parser4{"test_parser", 2, argv3};
     parser4.info.url = "www.seqan.de";
     parser4.add_option(option_value, 'i', "int", "this is a int option.");
@@ -232,6 +235,10 @@ TEST(help_page_printing, version_call)
 TEST(help_page_printing, do_not_print_hidden_options)
 {
     // Add an option and request help.
+    int option_value{5};
+    bool flag_value{};
+
+    const char * argv1[] = {"./help_add_test --version-check 0", "-h"};
     seqan3::argument_parser parser5{"test_parser", 2, argv1};
     parser5.add_option(option_value, 'i', "int", "this is a int option.", seqan3::option_spec::HIDDEN);
     parser5.add_flag(flag_value, 'f', "flag", "this is a flag.", seqan3::option_spec::HIDDEN);
@@ -265,11 +272,15 @@ auto enumeration_names(foo)
 
 TEST(help_page_printing, full_information)
 {
-    int8_t required_option{};
-    int8_t non_list_optional{1};
+    int option_value{5};
     foo enum_option_value{};
+    int8_t required_option{};
+    bool flag_value{};
+    int8_t non_list_optional{1};
+    std::vector<std::string> pos_opt_value{};
 
     // Add synopsis, description, short description, positional option, option, flag, and example.
+    const char * argv1[] = {"./help_add_test --version-check 0", "-h"};
     seqan3::argument_parser parser6{"test_parser", 2, argv1};
     parser6.info.synopsis.push_back("./some_binary_name synopsis");
     parser6.info.synopsis.push_back("./some_binary_name synopsis2");
