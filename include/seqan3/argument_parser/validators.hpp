@@ -26,7 +26,6 @@
 #include <seqan3/io/detail/safe_filesystem_entry.hpp>
 #include <seqan3/range/container/concept.hpp>
 #include <seqan3/range/views/join.hpp>
-#include <seqan3/range/views/to_lower.hpp>
 #include <seqan3/std/algorithm>
 #include <seqan3/std/concepts>
 #include <seqan3/std/filesystem>
