@@ -27,10 +27,23 @@
 #include <seqan3/io/detail/misc.hpp>
 #include <seqan3/io/detail/safe_filesystem_entry.hpp>
 #include <seqan3/range/container/concept.hpp>
-#include <seqan3/range/views/join.hpp>
-#include <seqan3/utility/type_list/traits.hpp>
-#include <seqan3/utility/type_pack/traits.hpp>
 #include <seqan3/utility/type_traits/basic.hpp>
+
+namespace seqan3::detail
+{
+
+template <typename string_range_t>
+std::string join_strings(string_range_t strings, std::string delim)
+{
+    std::ostringstream joined{};
+    std::copy(strings.begin(), strings.end(), std::ostream_iterator<std::string>{joined, delim.c_str()});
+    std::string join = joined.str();
+    if (join.size() >= delim.size()) // remove last delimiter
+        join.erase(join.size() - delim.size());
+    return join;
+}
+
+} // namespace seqan3::detail
 
 namespace seqan3
 {
@@ -448,7 +461,9 @@ protected:
         if (extensions.empty())
             return "";
         else
-            return detail::to_string(" Valid file extensions are: [", extensions | views::join(std::string{", "}), "].");
+            return detail::to_string(" Valid file extensions are: [",
+                                     detail::join_strings(extensions, std::string{", "}),
+                                     "].");
     }
 
     //!\brief Stores the extensions.
