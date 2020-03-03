@@ -22,9 +22,11 @@ TEST(html_format, empty_information)
     // Empty html help page.
     const char * argv0[] = {"./help_add_test --version-check 0", "--export-help", "html"};
     seqan3::argument_parser parser0{"empty_options", 3, argv0};
+
     testing::internal::CaptureStdout();
     EXPECT_EXIT(parser0.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
     my_stdout = testing::internal::GetCapturedStdout();
+
     expected = std::string("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" http://www.w3.org/TR/html4/strict.dtd\">\n"
                            "<html lang=\"en\">\n"
                            "<head>\n"
@@ -61,9 +63,11 @@ TEST(html_format, empty_information)
 
     const char * argv1[] = {"./help_add_test --version-check 0", "--export-help=html"};
     seqan3::argument_parser parser1{"empty_options", 2, argv1};
+
     testing::internal::CaptureStdout();
     EXPECT_EXIT(parser1.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
     my_stdout = testing::internal::GetCapturedStdout();
+
     EXPECT_EQ(my_stdout, expected);
 }
 
@@ -96,10 +100,11 @@ TEST(html_format, full_information_information)
    parser1.add_positional_option(list_pos_opt_value, "this is a positional option.");
    parser1.info.examples.push_back("example");
    parser1.info.examples.push_back("example2");
+
    testing::internal::CaptureStdout();
    EXPECT_EXIT(parser1.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
-
    my_stdout = testing::internal::GetCapturedStdout();
+
    expected = std::string("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" http://www.w3.org/TR/html4/strict.dtd\">\n"
                           "<html lang=\"en\">\n"
                           "<head>\n"
