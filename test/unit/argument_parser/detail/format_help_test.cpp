@@ -9,21 +9,11 @@
 
 #include <gtest/gtest.h>
 
-#include <seqan3/std/ranges>
-#include <range/v3/algorithm/equal.hpp>
-
 #include <seqan3/argument_parser/argument_parser.hpp>
 #include <seqan3/argument_parser/detail/format_help.hpp>
-#include <seqan3/core/char_operations/predicate.hpp>
-#include <seqan3/range/detail/misc.hpp>
-#include <seqan3/range/views/take_until.hpp>
-#include <seqan3/range/views/drop.hpp>
 #include <seqan3/range/views/get.hpp>
-#include <seqan3/range/views/to.hpp>
 
 // reused global variables
-std::string std_cout;
-std::string expected;
 int option_value{5};
 bool flag_value{};
 std::vector<std::string> pos_opt_value{};
@@ -57,19 +47,33 @@ std::string const basic_version_str = "VERSION\n"
                                       "    test_parser version: \n"
                                       "    SeqAn version: " + version_str + "\n";
 
+std::string license_text()
+{
+    std::ifstream license_file{std::string{{SEQAN3_TEST_LICENSE_DIR}} + "/LICENSE.md"};
+    std::stringstream buffer;
+    buffer << license_file.rdbuf();
+
+    std::string str = buffer.str();
+    size_t license_start = str.find("```\n") + 4;
+    size_t license_end = str.find("```", license_start);
+
+    return str.substr(license_start, license_end - license_start);
+}
+
 TEST(help_page_printing, short_help)
 {
     // Empty call with no options given. For seqan3::detail::format_short_help
     seqan3::argument_parser parser0{"empty_options", 1, argv0};
     parser0.info.synopsis.push_back("./some_binary_name synopsis");
+
     testing::internal::CaptureStdout();
     EXPECT_EXIT(parser0.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
-    std_cout = testing::internal::GetCapturedStdout();
+    std::string std_cout = testing::internal::GetCapturedStdout();
 
-    expected = "empty_options\n"
-               "=============\n"
-               "    ./some_binary_name synopsis\n"
-               "    Try -h or --help for more information.\n";
+    std::string expected = "empty_options\n"
+                           "=============\n"
+                           "    ./some_binary_name synopsis\n"
+                           "    Try -h or --help for more information.\n";
     EXPECT_EQ(std_cout, expected);
 }
 
@@ -77,17 +81,19 @@ TEST(help_page_printing, no_information)
 {
     // Empty help call with -h
     seqan3::argument_parser parser1{"test_parser", 2, argv1};
+
     testing::internal::CaptureStdout();
     EXPECT_EXIT(parser1.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
-    std_cout = testing::internal::GetCapturedStdout();
-    expected = "test_parser\n"
-               "===========\n"
-               "\n" +
-               basic_options_str +
-               "\n"
-               "  \n"
-               "\n" +
-               basic_version_str;
+    std::string std_cout = testing::internal::GetCapturedStdout();
+
+    std::string expected = "test_parser\n"
+                           "===========\n"
+                           "\n" +
+                           basic_options_str +
+                           "\n"
+                           "  \n"
+                           "\n" +
+                           basic_version_str;
     EXPECT_EQ(std_cout, expected);
 }
 
@@ -96,21 +102,23 @@ TEST(help_page_printing, with_short_copyright)
     // Again, but with short copyright, long copyright, and citation.
     seqan3::argument_parser short_copy("test_parser", 2, argv1);
     short_copy.info.short_copyright = "short";
+
     testing::internal::CaptureStdout();
     EXPECT_EXIT(short_copy.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
-    std_cout = testing::internal::GetCapturedStdout();
-    expected = "test_parser\n"
-               "===========\n"
-               "\n" +
-               basic_options_str +
-               "\n"
-               "  \n"
-               "\n" +
-               basic_version_str +
-               "\n" +
-               "LEGAL\n"
-               "    test_parser Copyright: short\n"
-               "    SeqAn Copyright: 2006-2015 Knut Reinert, FU-Berlin; released under the 3-clause BSDL.\n";
+    std::string std_cout = testing::internal::GetCapturedStdout();
+
+    std::string expected = "test_parser\n"
+                           "===========\n"
+                           "\n" +
+                           basic_options_str +
+                           "\n"
+                           "  \n"
+                           "\n" +
+                           basic_version_str +
+                           "\n" +
+                           "LEGAL\n"
+                           "    test_parser Copyright: short\n"
+                           "    SeqAn Copyright: 2006-2015 Knut Reinert, FU-Berlin; released under the 3-clause BSDL.\n";
     EXPECT_EQ(std_cout, expected);
 }
 
@@ -118,21 +126,23 @@ TEST(help_page_printing, with_long_copyright)
 {
     seqan3::argument_parser long_copy("test_parser", 2, argv1);
     long_copy.info.long_copyright = "long";
+
     testing::internal::CaptureStdout();
     EXPECT_EXIT(long_copy.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
-    std_cout = testing::internal::GetCapturedStdout();
-    expected = "test_parser\n"
-               "===========\n"
-               "\n" +
-               basic_options_str +
-               "\n"
-               "  \n"
-               "\n" +
-               basic_version_str +
-               "\n" +
-               "LEGAL\n"
-               "    SeqAn Copyright: 2006-2015 Knut Reinert, FU-Berlin; released under the 3-clause BSDL.\n"
-               "    For full copyright and/or warranty information see --copyright.\n";
+    std::string std_cout = testing::internal::GetCapturedStdout();
+
+    std::string expected = "test_parser\n"
+                           "===========\n"
+                           "\n" +
+                           basic_options_str +
+                           "\n"
+                           "  \n"
+                           "\n" +
+                           basic_version_str +
+                           "\n" +
+                           "LEGAL\n"
+                           "    SeqAn Copyright: 2006-2015 Knut Reinert, FU-Berlin; released under the 3-clause BSDL.\n"
+                           "    For full copyright and/or warranty information see --copyright.\n";
     EXPECT_EQ(std_cout, expected);
 }
 
@@ -140,21 +150,23 @@ TEST(help_page_printing, with_citation)
 {
     seqan3::argument_parser citation("test_parser", 2, argv1);
     citation.info.citation = "citation";
+
     testing::internal::CaptureStdout();
     EXPECT_EXIT(citation.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
-    std_cout = testing::internal::GetCapturedStdout();
-    expected = "test_parser\n"
-               "===========\n"
-               "\n" +
-               basic_options_str +
-               "\n"
-               "  \n"
-               "\n" +
-               basic_version_str +
-               "\n" +
-               "LEGAL\n"
-               "    SeqAn Copyright: 2006-2015 Knut Reinert, FU-Berlin; released under the 3-clause BSDL.\n"
-               "    In your academic works please cite: citation\n";
+    std::string std_cout = testing::internal::GetCapturedStdout();
+
+    std::string expected = "test_parser\n"
+                           "===========\n"
+                           "\n" +
+                           basic_options_str +
+                           "\n"
+                           "  \n"
+                           "\n" +
+                           basic_version_str +
+                           "\n" +
+                           "LEGAL\n"
+                           "    SeqAn Copyright: 2006-2015 Knut Reinert, FU-Berlin; released under the 3-clause BSDL.\n"
+                           "    In your academic works please cite: citation\n";
     EXPECT_EQ(std_cout, expected);
 }
 
@@ -162,17 +174,19 @@ TEST(help_page_printing, empty_advanced_help)
 {
     // Empty help call with -hh
     seqan3::argument_parser parser2{"test_parser", 2, argv2};
+
     testing::internal::CaptureStdout();
     EXPECT_EXIT(parser2.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
-    std_cout = testing::internal::GetCapturedStdout();
-    expected = "test_parser\n"
-               "===========\n"
-               "\n" +
-               basic_options_str +
-               "\n"
-               "  \n"
-               "\n" +
-               basic_version_str;
+    std::string std_cout = testing::internal::GetCapturedStdout();
+
+    std::string expected = "test_parser\n"
+                           "===========\n"
+                           "\n" +
+                           basic_options_str +
+                           "\n"
+                           "  \n"
+                           "\n" +
+                           basic_version_str;
     EXPECT_EQ(std_cout, expected);
 }
 
@@ -180,13 +194,15 @@ TEST(help_page_printing, empty_version_call)
 {
     // Empty version call
     seqan3::argument_parser parser3{"test_parser", 2, argv3};
+
     testing::internal::CaptureStdout();
     EXPECT_EXIT(parser3.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
-    std_cout = testing::internal::GetCapturedStdout();
-    expected = "test_parser\n"
-               "===========\n"
-               "\n" +
-               basic_version_str;
+    std::string std_cout = testing::internal::GetCapturedStdout();
+
+    std::string expected = "test_parser\n"
+                           "===========\n"
+                           "\n" +
+                           basic_version_str;
     EXPECT_EQ(std_cout, expected);
 }
 
@@ -198,16 +214,18 @@ TEST(help_page_printing, version_call)
     parser4.add_option(option_value, 'i', "int", "this is a int option.");
     parser4.add_flag(flag_value, 'f', "flag", "this is a flag.");
     parser4.add_positional_option(pos_opt_value, "this is a positional option.");
+
     testing::internal::CaptureStdout();
     EXPECT_EXIT(parser4.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
-    std_cout = testing::internal::GetCapturedStdout();
-    expected = "test_parser\n"
-               "===========\n"
-               "\n" +
-               basic_version_str +
-               "URL\n"
-               "    www.seqan.de\n"
-               "\n";
+    std::string std_cout = testing::internal::GetCapturedStdout();
+
+    std::string expected = "test_parser\n"
+                           "===========\n"
+                           "\n" +
+                           basic_version_str +
+                           "URL\n"
+                           "    www.seqan.de\n"
+                           "\n";
     EXPECT_EQ(std_cout, expected);
 }
 
@@ -217,17 +235,19 @@ TEST(help_page_printing, do_not_print_hidden_options)
     seqan3::argument_parser parser5{"test_parser", 2, argv1};
     parser5.add_option(option_value, 'i', "int", "this is a int option.", seqan3::option_spec::HIDDEN);
     parser5.add_flag(flag_value, 'f', "flag", "this is a flag.", seqan3::option_spec::HIDDEN);
+
     testing::internal::CaptureStdout();
     EXPECT_EXIT(parser5.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
-    std_cout = testing::internal::GetCapturedStdout();
-    expected = "test_parser\n"
-               "===========\n"
-               "\n" +
-               basic_options_str +
-               "\n"
-               "  \n"
-               "\n" +
-               basic_version_str;
+    std::string std_cout = testing::internal::GetCapturedStdout();
+
+    std::string expected = "test_parser\n"
+                           "===========\n"
+                           "\n" +
+                           basic_options_str +
+                           "\n"
+                           "  \n"
+                           "\n" +
+                           basic_version_str;
     EXPECT_EQ(std_cout, expected);
 }
 
@@ -269,65 +289,54 @@ TEST(help_page_printing, full_information)
     parser6.add_positional_option(pos_opt_value, "this is a positional option.");
     parser6.info.examples.push_back("example");
     parser6.info.examples.push_back("example2");
+
     testing::internal::CaptureStdout();
     EXPECT_EXIT(parser6.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
-    std_cout = testing::internal::GetCapturedStdout();
-    expected = "test_parser - so short\n"
-               "======================\n"
-               "\n"
-               "SYNOPSIS\n"
-               "    ./some_binary_name synopsis\n"
-               "    ./some_binary_name synopsis2\n"
-               "\n"
-               "DESCRIPTION\n"
-               "    description\n"
-               "\n"
-               "    description2\n"
-               "\n"
-               "POSITIONAL ARGUMENTS\n"
-               "    ARGUMENT-1 (signed 8 bit integer)\n"
-               "          this is not a list.\n"
-               "    ARGUMENT-2 (List of std::string's)\n"
-               "          this is a positional option. Default: [].\n"
-               "\n" +
-               basic_options_str +
-               "\n"
-               "  \n"
-               "    -i, --int (signed 32 bit integer)\n"
-               "          this is a int option. Default: 5.\n"
-               "    -e, --enum (foo)\n"
-               "          this is an enum option. Default: one. Value must be one of\n"
-               "          [three,two,one].\n"
-               "    -r, --required-int (signed 8 bit integer)\n"
-               "          this is another int option.\n"
-               "\n"
-               "FLAGS\n"
-               "\n"
-               "  SubFlags\n"
-               "    here come all the flags\n"
-               "    -f, --flag\n"
-               "          this is a flag.\n"
-               "\n"
-               "EXAMPLES\n"
-               "    example\n"
-               "\n"
-               "    example2\n"
-               "\n" +
-               basic_version_str;
+    std::string std_cout = testing::internal::GetCapturedStdout();
+
+    std::string expected = "test_parser - so short\n"
+                           "======================\n"
+                           "\n"
+                           "SYNOPSIS\n"
+                           "    ./some_binary_name synopsis\n"
+                           "    ./some_binary_name synopsis2\n"
+                           "\n"
+                           "DESCRIPTION\n"
+                           "    description\n"
+                           "\n"
+                           "    description2\n"
+                           "\n"
+                           "POSITIONAL ARGUMENTS\n"
+                           "    ARGUMENT-1 (signed 8 bit integer)\n"
+                           "          this is not a list.\n"
+                           "    ARGUMENT-2 (List of std::string's)\n"
+                           "          this is a positional option. Default: [].\n"
+                           "\n" +
+                           basic_options_str +
+                           "\n"
+                           "  \n"
+                           "    -i, --int (signed 32 bit integer)\n"
+                           "          this is a int option. Default: 5.\n"
+                           "    -e, --enum (foo)\n"
+                           "          this is an enum option. Default: one. Value must be one of\n"
+                           "          [three,two,one].\n"
+                           "    -r, --required-int (signed 8 bit integer)\n"
+                           "          this is another int option.\n"
+                           "\n"
+                           "FLAGS\n"
+                           "\n"
+                           "  SubFlags\n"
+                           "    here come all the flags\n"
+                           "    -f, --flag\n"
+                           "          this is a flag.\n"
+                           "\n"
+                           "EXAMPLES\n"
+                           "    example\n"
+                           "\n"
+                           "    example2\n"
+                           "\n" +
+                           basic_version_str;
     EXPECT_EQ(std_cout, expected);
-}
-
-std::string license_text()
-{
-    std::ifstream license_file{std::string{{SEQAN3_TEST_LICENSE_DIR}} + "/LICENSE.md"};
-    std::stringstream buffer;
-    buffer << license_file.rdbuf();
-
-    std::string str = buffer.str();
-    size_t license_start = str.find("```\n") + 4;
-    size_t license_end = str.find("```", license_start);
-
-    return str.substr(license_start, license_end - license_start);
 }
 
 TEST(help_page_printing, copyright)
@@ -342,16 +351,16 @@ TEST(help_page_printing, copyright)
     {
         testing::internal::CaptureStdout();
         EXPECT_EXIT(copyright.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
-        std_cout = testing::internal::GetCapturedStdout();
+        std::string std_cout = testing::internal::GetCapturedStdout();
 
-        expected = "================================================================================\n"
-                   "Copyright information for myApp:\n"
-                   "--------------------------------------------------------------------------------\n"
-                   "myApp copyright information not available.\n"
-                   "================================================================================\n"
-                   "This program contains SeqAn code licensed under the following terms:\n"
-                   "--------------------------------------------------------------------------------\n"
-                   + license_string;
+        std::string expected = "================================================================================\n"
+                               "Copyright information for myApp:\n"
+                               "--------------------------------------------------------------------------------\n"
+                               "myApp copyright information not available.\n"
+                               "================================================================================\n"
+                               "This program contains SeqAn code licensed under the following terms:\n"
+                               "--------------------------------------------------------------------------------\n"
+                               + license_string;
 
         EXPECT_EQ(std_cout, expected);
     }
@@ -361,18 +370,18 @@ TEST(help_page_printing, copyright)
     {
         testing::internal::CaptureStdout();
         EXPECT_EXIT(copyright.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
-        std_cout = testing::internal::GetCapturedStdout();
+        std::string std_cout = testing::internal::GetCapturedStdout();
 
-        expected = "================================================================================\n"
-                   "Copyright information for myApp:\n"
-                   "--------------------------------------------------------------------------------\n"
-                   "myApp full copyright information not available. Displaying short copyright information instead:\n"
-                   "short copyright line 1\n"
-                   "short copyright line 2\n"
-                   "================================================================================\n"
-                   "This program contains SeqAn code licensed under the following terms:\n"
-                   "--------------------------------------------------------------------------------\n"
-                   + license_string;
+        std::string expected = "================================================================================\n"
+                               "Copyright information for myApp:\n"
+                               "--------------------------------------------------------------------------------\n"
+                               "myApp full copyright information not available. Displaying short copyright information instead:\n"
+                               "short copyright line 1\n"
+                               "short copyright line 2\n"
+                               "================================================================================\n"
+                               "This program contains SeqAn code licensed under the following terms:\n"
+                               "--------------------------------------------------------------------------------\n"
+                               + license_string;
 
         EXPECT_EQ(std_cout, expected);
     }
@@ -382,17 +391,17 @@ TEST(help_page_printing, copyright)
     {
         testing::internal::CaptureStdout();
         EXPECT_EXIT(copyright.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
-        std_cout = testing::internal::GetCapturedStdout();
+        std::string std_cout = testing::internal::GetCapturedStdout();
 
-        expected = "================================================================================\n"
-                   "Copyright information for myApp:\n"
-                   "--------------------------------------------------------------------------------\n"
-                   "long copyright line 1\n"
-                   "long copyright line 2\n"
-                   "================================================================================\n"
-                   "This program contains SeqAn code licensed under the following terms:\n"
-                   "--------------------------------------------------------------------------------\n"
-                   + license_string;
+        std::string expected = "================================================================================\n"
+                               "Copyright information for myApp:\n"
+                               "--------------------------------------------------------------------------------\n"
+                               "long copyright line 1\n"
+                               "long copyright line 2\n"
+                               "================================================================================\n"
+                               "This program contains SeqAn code licensed under the following terms:\n"
+                               "--------------------------------------------------------------------------------\n"
+                               + license_string;
 
         EXPECT_EQ(std_cout, expected);
     }
