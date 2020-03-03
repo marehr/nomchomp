@@ -145,8 +145,8 @@ TEST_F(format_man_test, empty_information)
     // Test the dummy parser with minimal information.
     testing::internal::CaptureStdout();
     EXPECT_EXIT(parser.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
-
     my_stdout = testing::internal::GetCapturedStdout();
+
     EXPECT_EQ(my_stdout, expected_short);
 }
 
@@ -157,11 +157,12 @@ TEST_F(format_man_test, full_information)
 
     // Fill out the dummy parser with options and flags and sections and subsections.
     dummy_init(parser);
+
     // Test the dummy parser without any copyright or citations.
     testing::internal::CaptureStdout();
     EXPECT_EXIT(parser.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
-
     my_stdout = testing::internal::GetCapturedStdout();
+
     EXPECT_EQ(my_stdout, expected);
 }
 
@@ -172,6 +173,7 @@ TEST_F(format_man_test, full_info_short_copyright)
 
     // Fill out the dummy parser with options and flags and sections and subsections.
     dummy_init(parser);
+
     // Add a short copyright and test the dummy parser.
     parser.info.short_copyright = "short copyright";
     expected += R"(.SH LEGAL
@@ -182,8 +184,8 @@ TEST_F(format_man_test, full_info_short_copyright)
 )";
     testing::internal::CaptureStdout();
     EXPECT_EXIT(parser.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
-
     my_stdout = testing::internal::GetCapturedStdout();
+
     EXPECT_EQ(my_stdout, expected);
 }
 
@@ -194,6 +196,7 @@ TEST_F(format_man_test, full_info_short_and_citation)
 
     // Fill out the dummy parser with options and flags and sections and subsections.
     dummy_init(parser);
+
     // Add a short copyright & citation and test the dummy parser.
     parser.info.short_copyright = "short copyright";
     parser.info.citation = "citation";
@@ -207,8 +210,8 @@ TEST_F(format_man_test, full_info_short_and_citation)
 )";
     testing::internal::CaptureStdout();
     EXPECT_EXIT(parser.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
-
     my_stdout = testing::internal::GetCapturedStdout();
+
     EXPECT_EQ(my_stdout, expected);
 }
 
@@ -219,6 +222,7 @@ TEST_F(format_man_test, full_info_short_long_and_citation)
 
     // Fill out the dummy parser with options and flags and sections and subsections.
     dummy_init(parser);
+
     // Add a short copyright & citation & long copyright and test the dummy parser.
     parser.info.short_copyright = "short copyright";
     parser.info.citation = "citation";
@@ -234,7 +238,7 @@ For full copyright and/or warranty information see \fB--copyright\fR.
 )";
     testing::internal::CaptureStdout();
     EXPECT_EXIT(parser.parse(), ::testing::ExitedWithCode(EXIT_SUCCESS), "");
-
     my_stdout = testing::internal::GetCapturedStdout();
+
     EXPECT_EQ(my_stdout, expected);
 }
