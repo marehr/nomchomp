@@ -250,13 +250,13 @@ public:
             if (!is_option_visible(spec))
                 return;
 
-            std::string default_value{" "};
+            std::string default_value{};
             if (!(spec & option_spec::REQUIRED))
-                default_value = detail::to_string(" Default: ", value, ". ");
+                default_value = detail::to_string("Default: ", value, ". ");
 
             derived_t().print_list_item(prep_id_for_help(short_id, long_id) +
                                         " " + option_type_and_list_info(value),
-                                        desc + default_value + msg);
+                                        desc + " " + default_value + msg);
         });
     }
 
@@ -301,7 +301,7 @@ public:
             ++positional_option_count;
 
             // a list at the end may be empty and thus have a default value
-            std::string default_value{" "};
+            std::string default_value{};
             if constexpr (sequence_container<option_type> && !std::same_as<option_type, std::string>)
             {
                 auto && range = value | std::views::transform([](auto && range_value)
@@ -309,12 +309,12 @@ public:
                     return detail::as_string(range_value);
                 });
 
-                default_value = detail::as_string(" Default: [", join_strings(range, ", "), "]. ");
+                default_value = detail::as_string("Default: [", join_strings(range, ", "), "]. ");
             }
 
-            derived_t().print_list_item(detail::as_string("\\fBARGUMENT-", positional_option_count, "\\fP ",
-                                                          option_type_and_list_info(value)),
-                                        desc + default_value + msg);
+            derived_t().print_list_item(detail::as_string("\\fBARGUMENT-", positional_option_count, "\\fP",
+                                                          " ", option_type_and_list_info(value)),
+                                        desc + " " + default_value + msg);
         });
     }
 
