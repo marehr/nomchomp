@@ -1,5 +1,11 @@
 #pragma once
 
+#include <string>
+#include <sstream>
+
+#include <seqan3/argument_parser/auxiliary.hpp>
+#include <seqan3/std/ranges>
+
 namespace seqan3::detail
 {
 
@@ -46,6 +52,17 @@ std::string as_string(value_type && ...values)
     std::stringstream stream{};
     (stringify(stream, std::forward<value_type>(values)), ...);
     return stream.str();
+}
+
+template <std::ranges::range range_t>
+std::string range_as_string(range_t && range, std::string delim = ", ")
+{
+    auto && string_range = range | std::views::transform([](auto && range_value)
+    {
+        return as_string(range_value);
+    });
+
+    return join_strings(string_range, delim);
 }
 
 } // namespace seqan3::detail
