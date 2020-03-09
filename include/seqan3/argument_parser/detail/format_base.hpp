@@ -20,6 +20,7 @@
 #include <string>
 
 #include <seqan3/argument_parser/auxiliary.hpp>
+#include <seqan3/argument_parser/detail/range_free.hpp>
 #include <seqan3/argument_parser/exceptions.hpp>
 #include <seqan3/argument_parser/validators.hpp>
 #include <seqan3/utility/detail/type_name_as_string.hpp>
@@ -270,7 +271,14 @@ public:
             // a list at the end may be empty and thus have a default value
             std::string default_value{" "};
             if constexpr (sequence_container<option_type> && !std::same_as<option_type, std::string>)
-                default_value = detail::to_string(" Default: ", value, ". ");
+            {
+                auto && range = value | std::views::transform([](auto && range_value)
+                {
+                    return detail::as_string(range_value);
+                });
+
+                default_value = detail::as_string(" Default: [", join_strings(range, ", "), "]. ");
+            }
 
             derived_t().print_list_item(detail::as_string("\\fBARGUMENT-", positional_option_count, "\\fP ",
                                                           option_type_and_list_info(value)),
