@@ -271,14 +271,7 @@ public:
             // a list at the end may be empty and thus have a default value
             std::string default_value{};
             if constexpr (sequence_container<option_type> && !std::same_as<option_type, std::string>)
-            {
-                auto && range = value | std::views::transform([](auto && range_value)
-                {
-                    return detail::as_string(range_value);
-                });
-
-                default_value = detail::as_string("Default: [", join_strings(range, ", "), "]. ");
-            }
+                default_value = "Default: [" + detail::range_as_string(value) + "]. ";
 
             std::string argument_str = "\\fBARGUMENT-" + detail::as_string(positional_option_count) + "\\fP";
             derived_t().print_list_item(argument_str + " " + option_type_and_list_info(value),
