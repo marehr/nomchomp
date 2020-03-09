@@ -236,7 +236,9 @@ public:
     {
         std::string id = prep_id_for_help(short_id, long_id) + " " + option_type_and_list_info(value);
         std::string info{desc};
-        info += ((spec & option_spec::required) ? std::string{" "} : detail::to_string(" Default: ", value, ". "));
+        info += " ";
+        if (!(spec & option_spec::required))
+            info += this->default_value_text(value);
         info += option_validator.get_help_page_message();
         store_help_page_element([this, id, info] () { derived_t().print_list_item(id, info); }, spec);
     }
@@ -271,7 +273,7 @@ public:
             // a list at the end may be empty and thus have a default value
             std::string default_value{};
             if constexpr (sequence_container<option_type> && !std::same_as<option_type, std::string>)
-                default_value = "Default: [" + detail::range_as_string(value) + "]. ";
+                default_value = this->default_value_text(value);
 
             std::string argument_str = "\\fBARGUMENT-" + detail::as_string(positional_option_count) + "\\fP";
             derived_t().print_list_item(argument_str + " " + option_type_and_list_info(value),
@@ -398,6 +400,15 @@ protected:
     derived_type & derived_t()
     {
         return static_cast<derived_type &>(*this);
+    }
+
+    template <typename option_type>
+    std::string default_value_text(option_type & value)
+    {
+        if constexpr (sequence_container<option_type> && !std::same_as<option_type, std::string>)
+            return "Default: [" + detail::range_as_string(value) + "]. ";
+        else
+            return "Default: " + detail::as_string(value) + ". ";
     }
 
     //!\brief Prints a synopsis in any format.
