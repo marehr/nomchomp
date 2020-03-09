@@ -312,8 +312,8 @@ public:
                 default_value = detail::as_string("Default: [", join_strings(range, ", "), "]. ");
             }
 
-            derived_t().print_list_item(detail::as_string("\\fBARGUMENT-", positional_option_count, "\\fP",
-                                                          " ", option_type_and_list_info(value)),
+            std::string argument_str = "\\fBARGUMENT-" + detail::as_string(positional_option_count) + "\\fP";
+            derived_t().print_list_item(argument_str + " " + option_type_and_list_info(value),
                                         desc + " " + default_value + msg);
         });
     }
