@@ -266,14 +266,15 @@ public:
         positional_option_calls.push_back([this, &value, desc, msg] ()
         {
             ++positional_option_count;
-            derived_t().print_list_item(detail::to_string("\\fBARGUMENT-", positional_option_count, "\\fP ",
+
+            // a list at the end may be empty and thus have a default value
+            std::string default_value{" "};
+            if constexpr (sequence_container<option_type> && !std::same_as<option_type, std::string>)
+                default_value = detail::to_string(" Default: ", value, ". ");
+
+            derived_t().print_list_item(detail::as_string("\\fBARGUMENT-", positional_option_count, "\\fP ",
                                                           option_type_and_list_info(value)),
-                                        desc +
-                                        // a list at the end may be empty and thus have a default value
-                                        ((sequence_container<option_type> && !std::same_as<option_type, std::string>)
-                                            ? detail::to_string(" Default: ", value, ". ")
-                                            : std::string{" "}) +
-                                        msg);
+                                        desc + default_value + msg);
         });
     }
 
