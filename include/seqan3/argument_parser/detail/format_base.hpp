@@ -247,7 +247,7 @@ public:
 
         parser_set_up_calls.push_back([this, &value, short_id, long_id, desc, spec, msg] ()
         {
-            if (!(spec & option_spec::HIDDEN) && (!(spec & option_spec::ADVANCED) || show_advanced_options))
+            if (is_option_visible(spec))
                   derived_t().print_list_item(prep_id_for_help(short_id, long_id) +
                                               " " + option_type_and_list_info(value),
                                               desc +
@@ -273,7 +273,7 @@ public:
     {
         parser_set_up_calls.push_back([this, short_id, long_id, desc, spec] ()
         {
-            if (!(spec & option_spec::HIDDEN) && (!(spec & option_spec::ADVANCED) || show_advanced_options))
+            if (is_option_visible(spec))
                 derived_t().print_list_item(prep_id_for_help(short_id, long_id), desc);
         });
     }
@@ -449,6 +449,14 @@ protected:
     derived_type & derived_t()
     {
         return static_cast<derived_type &>(*this);
+    }
+
+    //!\brief Whether a option should be displayed or not.
+    bool is_option_visible(option_spec const & spec)
+    {
+        bool is_hidden = spec & option_spec::HIDDEN;
+        is_hidden |= spec & option_spec::ADVANCED && !show_advanced_options;
+        return !is_hidden;
     }
 
     //!\brief Prints a synopsis in any format.
