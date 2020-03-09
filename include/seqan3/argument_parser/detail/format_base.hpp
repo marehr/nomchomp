@@ -250,13 +250,13 @@ public:
             if (!is_option_visible(spec))
                 return;
 
+            std::string default_value{" "};
+            if (!(spec & option_spec::REQUIRED))
+                default_value = detail::to_string(" Default: ", value, ". ");
+
             derived_t().print_list_item(prep_id_for_help(short_id, long_id) +
                                         " " + option_type_and_list_info(value),
-                                        desc +
-                                        ((spec & option_spec::REQUIRED)
-                                            ? std::string{" "}
-                                            : detail::to_string(" Default: ", value, ". ")) +
-                                        msg);
+                                        desc + default_value + msg);
         });
     }
 
