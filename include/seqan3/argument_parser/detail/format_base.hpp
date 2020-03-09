@@ -252,7 +252,12 @@ public:
 
             std::string default_value{};
             if (!(spec & option_spec::REQUIRED))
-                default_value = detail::to_string("Default: ", value, ". ");
+            {
+                if constexpr (sequence_container<option_type> && !std::same_as<option_type, std::string>)
+                    default_value = "Default: [" + detail::range_as_string(value) + "]. ";
+                else
+                    default_value = "Default: " + detail::as_string(value) + ". ";
+            }
 
             derived_t().print_list_item(prep_id_for_help(short_id, long_id) +
                                         " " + option_type_and_list_info(value),
@@ -303,14 +308,7 @@ public:
             // a list at the end may be empty and thus have a default value
             std::string default_value{};
             if constexpr (sequence_container<option_type> && !std::same_as<option_type, std::string>)
-            {
-                auto && range = value | std::views::transform([](auto && range_value)
-                {
-                    return detail::as_string(range_value);
-                });
-
-                default_value = detail::as_string("Default: [", join_strings(range, ", "), "]. ");
-            }
+                default_value = "Default: [" + detail::range_as_string(value) + "]. ";
 
             std::string argument_str = "\\fBARGUMENT-" + detail::as_string(positional_option_count) + "\\fP";
             derived_t().print_list_item(argument_str + " " + option_type_and_list_info(value),
