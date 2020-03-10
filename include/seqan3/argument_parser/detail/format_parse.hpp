@@ -19,7 +19,6 @@
 #include <vector>
 
 #include <seqan3/argument_parser/detail/format_base.hpp>
-#include <seqan3/utility/char_operations/predicate.hpp>
 #include <seqan3/utility/detail/type_name_as_string.hpp>
 
 namespace seqan3::detail
@@ -156,7 +155,7 @@ public:
         if constexpr (std::same_as<std::remove_cvref_t<id_type>, std::string>)
             return id.empty();
         else // char
-            return is_char<'\0'>(id);
+            return id == '\0';
     }
 
     /*!\brief Finds the position of a short/long identifier in format_parse::argv.
