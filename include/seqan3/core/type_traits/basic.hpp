@@ -15,7 +15,6 @@
 #include <tuple>
 #include <type_traits>
 
-#include <seqan3/core/type_traits/function.hpp>
 #include <seqan3/std/type_traits>
 
 namespace seqan3
