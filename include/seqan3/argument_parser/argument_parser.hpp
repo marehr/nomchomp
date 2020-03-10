@@ -404,9 +404,10 @@ public:
 
         if (std::holds_alternative<detail::format_parse>(format) && !subcommands.empty() && sub_parser == nullptr)
         {
-            throw too_few_arguments{detail::to_string("You either forgot or misspelled the subcommand! Please specify"
-                                                      " which sub-program you want to use: one of ", subcommands,
-                                                      ". Use -h/--help for more information.")};
+            throw too_few_arguments{"You either forgot or misspelled the subcommand! Please specify"
+                                    " which sub-program you want to use: one of " +
+                                    detail::join_strings(subcommands, ", ") +
+                                    ". Use -h/--help for more information."};
         }
 
         if (app_version.decide_if_check_is_performed(version_check_dev_decision, version_check_user_decision))
