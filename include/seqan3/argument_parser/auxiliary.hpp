@@ -188,36 +188,6 @@ SEQAN3_CONCEPT argument_parser_compatible_option = input_stream_over<std::istrin
                                                    named_enumeration<option_type>;
 //!\endcond
 
-/*!\name Formatted output overloads
- * \{
- */
-/*!\brief A type (e.g. an enum) can be made debug streamable by customizing the seqan3::enumeration_names.
- * \tparam option_type Type of the enum to be printed.
- * \param s  The seqan3::debug_stream.
- * \param op The value to print.
- * \relates seqan3::debug_stream_type
- *
- * \details
- *
- * This searches the seqan3::enumeration_names of the respective type for the value \p op and prints the
- * respective string if found or '\<UNKNOWN_VALUE\>' if the value cannot be found in the map.
- */
-template <typename char_t, typename option_type>
-//!\cond
-    requires named_enumeration<std::remove_cvref_t<option_type>>
-//!\endcond
-inline debug_stream_type<char_t> & operator<<(debug_stream_type<char_t> & s, option_type && op)
-{
-    for (auto & [key, value] : enumeration_names<option_type>)
-    {
-        if (op == value)
-            return s << key;
-    }
-
-    return s << "<UNKNOWN_VALUE>";
-}
-//!\}
-
 /*!\brief Used to further specify argument_parser options/flags.
  * \ingroup argument_parser
  *
