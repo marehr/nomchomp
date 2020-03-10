@@ -22,7 +22,6 @@
 #include <seqan3/core/concept/core_language.hpp>
 #include <seqan3/core/type_list/traits.hpp>
 #include <seqan3/core/type_traits/basic.hpp>
-#include <seqan3/core/type_traits/pre.hpp>
 #include <seqan3/io/detail/misc.hpp>
 #include <seqan3/io/detail/safe_filesystem_entry.hpp>
 #include <seqan3/range/container/concept.hpp>
