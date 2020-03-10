@@ -177,7 +177,7 @@ public:
         if constexpr (std::same_as<remove_cvref_t<id_type>, std::string>)
             return id.empty();
         else // char
-            return is_char<'\0'>(id);
+            return id == '\0';
     }
 
 private:
