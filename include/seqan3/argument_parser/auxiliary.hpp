@@ -83,7 +83,7 @@ struct enumeration_names_fn
 {
     //!\brief `option_t` with cvref removed and possibly wrapped in std::type_identity.
     using s_option_t = std::conditional_t<std::is_nothrow_default_constructible_v<std::remove_cvref_t<option_t>> &&
-                                          seqan3::is_constexpr_default_constructible_v<std::remove_cvref_t<option_t>>,
+                                          std::is_default_constructible_v<std::remove_cvref_t<option_t>>,
                                           std::remove_cvref_t<option_t>,
                                           std::type_identity<option_t>>;
 
