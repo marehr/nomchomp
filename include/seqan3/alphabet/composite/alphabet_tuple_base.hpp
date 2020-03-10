@@ -23,7 +23,6 @@
 #include <seqan3/alphabet/detail/alphabet_proxy.hpp>
 #include <seqan3/core/concept/core_language.hpp>
 #include <seqan3/core/concept/tuple.hpp>
-#include <seqan3/core/detail/debug_stream_type.hpp>
 #include <seqan3/core/detail/int_types.hpp>
 #include <seqan3/core/type_traits/transformation_trait_or.hpp>
 #include <seqan3/std/concepts>
