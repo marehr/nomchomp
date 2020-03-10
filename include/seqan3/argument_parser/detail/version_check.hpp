@@ -21,7 +21,7 @@
 #include <regex>
 
 #include <seqan3/version.hpp>
-#include <seqan3/core/detail/terminal.hpp>
+#include <seqan3/argument_parser/detail/terminal.hpp>
 #include <seqan3/io/detail/misc.hpp>
 #include <seqan3/io/detail/safe_filesystem_entry.hpp>
 #include <seqan3/std/charconv>
