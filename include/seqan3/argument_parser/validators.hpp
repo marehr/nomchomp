@@ -20,7 +20,6 @@
 #include <seqan3/argument_parser/detail/range_free.hpp>
 #include <seqan3/argument_parser/exceptions.hpp>
 #include <seqan3/core/concept/core_language.hpp>
-#include <seqan3/core/detail/to_string.hpp>
 #include <seqan3/core/type_list/traits.hpp>
 #include <seqan3/core/type_traits/basic.hpp>
 #include <seqan3/core/type_traits/pre.hpp>

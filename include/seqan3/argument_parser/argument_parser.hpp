@@ -30,7 +30,6 @@
 #include <seqan3/core/char_operations/predicate.hpp>
 #include <seqan3/core/detail/terminal.hpp>
 #include <seqan3/core/detail/test_accessor.hpp>
-#include <seqan3/core/detail/to_string.hpp>
 #include <seqan3/io/stream/concept.hpp>
 
 namespace seqan3
