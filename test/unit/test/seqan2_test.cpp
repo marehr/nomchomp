@@ -7,7 +7,6 @@
 
 #include <gtest/gtest.h>
 
-#include <seqan3/core/concept/tuple.hpp>
 #include <seqan3/core/type_traits/iterator.hpp>
 #include <seqan3/core/type_traits/range.hpp>
 #include <seqan3/test/seqan2.hpp>
