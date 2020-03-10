@@ -14,7 +14,6 @@
 
 #include <iostream>
 
-#include <seqan3/core/detail/debug_stream_range.hpp>
 #include <seqan3/core/detail/debug_stream_type.hpp>
 
 // forward declare
