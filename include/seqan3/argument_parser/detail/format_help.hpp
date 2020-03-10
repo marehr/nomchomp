@@ -495,7 +495,7 @@ public:
     void parse(argument_parser_meta_data const & parser_meta)
     {
         meta = parser_meta;
-        debug_stream_type stream{std::cout};
+        auto && stream = std::cout;
         std::string seqan_license{
 R"(Copyright (c) 2006-2020, Knut Reinert & Freie Universität Berlin
 Copyright (c) 2016-2020, Knut Reinert & MPI für molekulare Genetik
