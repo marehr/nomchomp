@@ -677,8 +677,9 @@ private:
         {
             if (!subcommands.empty() && sub_parser == nullptr)
             {
-                throw too_few_arguments{detail::to_string("Please specify which sub program you want to use ",
-                                        "(one of ", subcommands, "). Use -h/--help for more information.")};
+                throw too_few_arguments{"Please specify which sub program you want to use "
+                                        "(one of " + detail::join_strings(subcommands, ", ") + "). "
+                                        "Use -h/--help for more information."};
             }
 
             format = detail::format_parse(argc, std::move(argv_new));
