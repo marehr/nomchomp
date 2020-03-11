@@ -136,7 +136,7 @@ public:
      */
     template <std::ranges::forward_range range_type>
     //!\cond
-        requires arithmetic<std::ranges::range_value_t<range_type>>
+        requires std::is_arithmetic_v<std::ranges::range_value_t<range_type>>
     //!\endcond
     void operator()(range_type const & range) const
     {
@@ -272,13 +272,16 @@ private:
  * \{
  */
 //!\brief Deduction guide for a parameter pack over an arithmetic type.
-template <arithmetic ...option_types>
+template <typename ...option_types>
+//!\cond
+    requires (std::is_arithmetic_v<option_types> && ...)
+//!\endcond
 value_list_validator(option_types...) -> value_list_validator<double>;
 
 //!\brief Deduction guide for ranges over an arithmetic type.
 template <std::ranges::forward_range range_type>
 //!\cond
-    requires arithmetic<std::ranges::range_value_t<range_type>>
+    requires std::is_arithmetic_v<std::ranges::range_value_t<range_type>>
 //!\endcond
 value_list_validator(range_type && rng) -> value_list_validator<double>;
 

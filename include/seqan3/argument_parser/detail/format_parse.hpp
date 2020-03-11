@@ -376,9 +376,9 @@ private:
      *
      * This function delegates to std::from_chars.
      */
-    template <arithmetic option_t>
+    template <typename option_t>
     //!\cond
-        requires input_stream_over<std::istringstream, option_t>
+        requires std::is_arithmetic_v<option_t> && input_stream_over<std::istringstream, option_t>
     //!\endcond
     option_parse_result parse_option_value(option_t & value, std::string const & in)
     {
@@ -438,7 +438,7 @@ private:
                                    get_type_name_as_string(input_value) + "."};
         }
 
-        if constexpr (arithmetic<option_type>)
+        if constexpr (std::is_arithmetic_v<option_type>)
         {
             if (res == option_parse_result::overflow_error)
             {
