@@ -25,35 +25,6 @@
 namespace seqan3::detail
 {
 
-//!\brief Base class to deduce the std::variant type from format tags.
-//!\ingroup io
-template <typename list_t, template <typename ...> typename output_t>
-struct variant_from_tags;
-
-//!\brief Transfers a list of format tags (`...ts`) onto a std::variant by specialising output_t with each.
-//!\ingroup io
-template <template <typename...> typename output_t, typename ...ts>
-struct variant_from_tags<type_list<ts...>, output_t>
-{
-    //!\brief The type of std::variant.
-    using type = std::variant<output_t<ts>...>;
-};
-
-/*!\brief Write `"\n"` or `"\r\n"` to the stream iterator, depending on arguments.
- * \tparam  it_t Type of the iterator; must satisfy std::output_Iterator with `char`.
- * \param     it The iterator.
- * \param add_cr Whether to add carriage return, too.
- * \ingroup io
- */
-template <std::output_iterator<char> it_t>
-constexpr void write_eol(it_t & it, bool const add_cr)
-{
-    if (add_cr)
-        it = '\r';
-
-    it = '\n';
-}
-
 /*!\brief Sets the file format according to the file name extension.
  * \ingroup io
  * \tparam     format_variant_type The variant type of the format to set.
