@@ -184,58 +184,6 @@ SEQAN3_CONCEPT sequence_container = requires (type val, type val2, type const cv
 };
 //!\endcond
 
-/*!\interface seqan3::random_access_container <>
- * \extends seqan3::sequence_container
- * \extends std::ranges::random_access_range
- * \brief A more refined container concept than seqan3::sequence_container.
- *
- * Adds requirements for `.at()`, `.resize()` and the subscript operator `[]`. Models the subset of the
- * [STL SequenceConcept](httpa://en.cppreference.com/w/cpp/concept/SequenceConcept) that is supported
- * by `std::vector`, `std::deque` and `std::basic_string`.
- *
- * \attention
- * `std::array`, `std::forward_list` and `std::list` do not satisfy this concept.
- *
- * \sa
- */
-//!\cond
-template <typename type>
-SEQAN3_CONCEPT random_access_container = requires (type val)
-{
-    requires sequence_container<type>;
-
-    // access container
-    { val[0]    } -> typename type::reference;
-    { val.at(0) } -> typename type::reference;
-
-    // modify container
-    { val.resize(0)                              } -> void;
-    { val.resize(0, typename type::value_type{}) } -> void;
-};
-//!\endcond
-
-/*!\interface seqan3::reservible_container <>
- * \extends seqan3::random_access_container
- * \brief A more refined container concept than seqan3::random_access_container.
- *
- * Adds requirements for `.reserve()`, `.capacity()` and `.shrink_to_fit()`.
- * Satisfied by `std::vector` and `std::basic_string`.
- *
- * \attention
- * `std::array`, `std::forward_list`, `std::list` and `std::deque` do not satisfy this concept.
- */
-//!\cond
-template <typename type>
-SEQAN3_CONCEPT reservible_container = requires (type val)
-{
-    requires random_access_container<type>;
-
-    { val.capacity()      } -> typename type::size_type;
-    { val.reserve(0)      } -> void;
-    { val.shrink_to_fit() } -> void;
-};
-//!\endcond
-
 //!\}
 
 } // namespace seqan3
