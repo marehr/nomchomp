@@ -23,7 +23,6 @@
 #include <seqan3/argument_parser/auxiliary.hpp>
 #include <seqan3/argument_parser/detail/range_free.hpp>
 #include <seqan3/argument_parser/exceptions.hpp>
-#include <seqan3/core/concept/core_language.hpp>
 #include <seqan3/io/detail/misc.hpp>
 #include <seqan3/io/detail/safe_filesystem_entry.hpp>
 #include <seqan3/range/container/concept.hpp>
@@ -147,7 +146,7 @@ public:
      */
     template <std::ranges::forward_range range_type>
     //!\cond
-        requires arithmetic<std::ranges::range_value_t<range_type>>
+        requires std::is_arithmetic_v<std::ranges::range_value_t<range_type>>
     //!\endcond
     void operator()(range_type const & range) const
     {
