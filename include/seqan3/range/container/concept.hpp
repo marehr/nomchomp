@@ -213,58 +213,6 @@ SEQAN3_CONCEPT sequence_container = requires (type val, type val2, type const cv
 };
 //!\endcond
 
-/*!\interface seqan3::random_access_container <>
- * \extends seqan3::sequence_container
- * \extends std::ranges::random_access_range
- * \brief A more refined container concept than seqan3::sequence_container.
- *
- * Adds requirements for `.at()`, `.resize()` and the subscript operator `[]`. Models the subset of the
- * [STL SequenceConcept](https://en.cppreference.com/w/cpp/named_req/SequenceContainer) that is supported
- * by `std::vector`, `std::deque` and `std::basic_string`.
- *
- * \attention
- * `std::array`, `std::forward_list` and `std::list` do not satisfy this concept.
- *
- * \sa
- */
-//!\cond
-template <typename type>
-SEQAN3_CONCEPT random_access_container = requires (type val)
-{
-    requires sequence_container<type>;
-
-    // access container
-    SEQAN3_RETURN_TYPE_CONSTRAINT(val[0], std::same_as, typename type::reference);
-    SEQAN3_RETURN_TYPE_CONSTRAINT(val.at(0), std::same_as, typename type::reference);
-
-    // modify container
-    SEQAN3_RETURN_TYPE_CONSTRAINT(val.resize(0), std::same_as, void);
-    SEQAN3_RETURN_TYPE_CONSTRAINT(val.resize(0, typename type::value_type{}), std::same_as, void);
-};
-//!\endcond
-
-/*!\interface seqan3::reservible_container <>
- * \extends seqan3::random_access_container
- * \brief A more refined container concept than seqan3::random_access_container.
- *
- * Adds requirements for `.reserve()`, `.capacity()` and `.shrink_to_fit()`.
- * Satisfied by `std::vector` and `std::basic_string`.
- *
- * \attention
- * `std::array`, `std::forward_list`, `std::list` and `std::deque` do not satisfy this concept.
- */
-//!\cond
-template <typename type>
-SEQAN3_CONCEPT reservible_container = requires (type val)
-{
-    requires random_access_container<type>;
-
-    SEQAN3_RETURN_TYPE_CONSTRAINT(val.capacity(), std::same_as, typename type::size_type);
-    SEQAN3_RETURN_TYPE_CONSTRAINT(val.reserve(0), std::same_as, void);
-    SEQAN3_RETURN_TYPE_CONSTRAINT(val.shrink_to_fit(), std::same_as, void);
-};
-//!\endcond
-
 //!\}
 
 } // namespace seqan3

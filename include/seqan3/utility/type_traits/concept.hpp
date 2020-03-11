@@ -30,15 +30,4 @@ template <typename t>
 SEQAN3_CONCEPT transformation_trait = requires { typename t::type; };
 //!\endcond
 
-/*!\interface seqan3::unary_type_trait
- * \ingroup type_traits
- * \brief Concept for a unary traits type.
- *
- * An object is a unary traits type if it is derived from std::integral_constant.
- */
-//!\cond
-template <typename t>
-SEQAN3_CONCEPT unary_type_trait = std::is_base_of_v<std::integral_constant<typename t::value_type, t::value>, t>;
-//!\endcond
-
 } // namespace seqan3
