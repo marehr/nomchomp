@@ -20,7 +20,11 @@
 
 #include <algorithm>
 
-#ifndef __cpp_lib_ranges  // If not C++20 ranges available, implement via range-v3.
+#if defined(__cpp_lib_ranges)  // If not C++20 ranges available, implement via range-v3.
+#elif __has_include(<stl2/algorithm.hpp>)
+#include <seqan3/std/ranges>
+#include <stl2/algorithm.hpp>
+#else
 
 #include <seqan3/std/ranges>
 

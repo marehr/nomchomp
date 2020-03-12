@@ -17,7 +17,25 @@
 #include <concepts>
 #endif // __has_include(<concepts>)
 
-#ifndef __cpp_lib_concepts // use range-v3 to emulate, if C++20 concepts are not available
+#ifdef __cpp_lib_concepts
+#elif __has_include(<stl2/concepts.hpp>)
+#include <stl2/concepts.hpp>
+
+namespace std
+{
+using __stl2::same_as;
+using __stl2::invocable;
+using __stl2::equality_comparable;
+using __stl2::constructible_from;
+using __stl2::convertible_to;
+using __stl2::integral;
+using __stl2::unsigned_integral;
+using __stl2::signed_integral;
+using __stl2::floating_point;
+using __stl2::copyable;
+} // namespace std
+
+#elif __has_include(<range/v3/version.hpp>) // use range-v3 to emulate, if C++20 concepts are not available
 
 #include <concepts/concepts.hpp>
 #include <range/v3/functional/concepts.hpp>

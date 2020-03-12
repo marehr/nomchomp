@@ -65,6 +65,49 @@ template<class T>
 inline constexpr bool enable_borrowed_range<T> = true;
 } // namespace std::ranges
 
+#elif __has_include(<stl2/ranges.hpp>)
+#include <stl2/ranges.hpp>
+
+STL2_OPEN_NAMESPACE
+{
+namespace views
+{
+template<int X>
+    requires (X == 0) || (X == 1)
+struct __get_fn {
+    template<class P>
+    requires detail::PairLike<remove_reference_t<P>> // from subrange.hpp
+    constexpr decltype(auto) operator()(P&& p) const
+    {
+        using T = decltype(std::get<X>(std::forward<P>(p)));
+        return std::forward<T>(std::get<X>(std::forward<P>(p)));
+    }
+};
+inline constexpr auto keys = transform(__get_fn<0>{});
+inline constexpr auto values = transform(__get_fn<1>{});
+} // namespace views
+
+}
+STL2_CLOSE_NAMESPACE
+
+namespace std::ranges
+{
+
+namespace
+{
+
+using namespace __stl2;
+
+} // anonymous namespace
+
+} // namespace std::ranges
+
+namespace std
+{
+
+namespace views = __stl2::views;
+
+} // namespace std::
 #else // implement via range-v3
 
 //!\cond
