@@ -21,9 +21,9 @@
 #include <regex>
 
 #include <seqan3/version.hpp>
+#include <seqan3/argument_parser/detail/file.hpp>
 #include <seqan3/argument_parser/detail/terminal.hpp>
 #include <seqan3/io/detail/misc.hpp>
-#include <seqan3/io/detail/safe_filesystem_entry.hpp>
 #include <seqan3/std/charconv>
 
 namespace seqan3::detail
@@ -250,16 +250,9 @@ public:
             tmp_path = temp_directory_path(); // choose temp dir instead
 
         // check if files can be written inside dir
-        path dummy = tmp_path / "dummy.txt";
-        std::ofstream file{dummy};
-        bool write_permissions = file.is_open() && file.good();
-        file.close();
-        std::filesystem::remove(dummy);
-
+        bool write_permissions = detail::writeable_file(tmp_path / "dummy.txt");
         if (!write_permissions) // no write permissions
-        {
             tmp_path.clear(); // empty path signals no available directory to write to, version check will not be done
-        }
 
         return tmp_path;
     }
