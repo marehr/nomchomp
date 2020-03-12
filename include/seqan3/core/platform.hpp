@@ -66,7 +66,8 @@
 #endif
 
 // Ranges [required]
-#if __has_include(<range/v3/version.hpp>)
+#if __has_include(<stl2/concepts.hpp>)
+#elif __has_include(<range/v3/version.hpp>)
 #   define RANGE_V3_MINVERSION 1000
 #   define RANGE_V3_MAXVERSION 1099
 // TODO the following doesn't actually show the current version, only its formula. How'd you do it?
