@@ -21,10 +21,10 @@
 #include <sstream>
 
 #include <seqan3/argument_parser/auxiliary.hpp>
+#include <seqan3/argument_parser/detail/file.hpp>
 #include <seqan3/argument_parser/detail/range_free.hpp>
 #include <seqan3/argument_parser/exceptions.hpp>
 #include <seqan3/io/detail/misc.hpp>
-#include <seqan3/io/detail/safe_filesystem_entry.hpp>
 #include <seqan3/range/container/concept.hpp>
 #include <seqan3/utility/type_traits/basic.hpp>
 
@@ -439,17 +439,8 @@ protected:
      */
     void validate_writeability(std::filesystem::path const & path) const
     {
-        std::ofstream file{path};
-        detail::safe_filesystem_entry file_guard{path};
-
-        bool is_open = file.is_open();
-        bool is_good = file.good();
-        file.close();
-
-        if (!is_good || !is_open)
+        if (!detail::writeable_file(path))
             throw validation_error{detail::as_string("Cannot write ", path, "!")};
-
-        file_guard.remove();
     }
 
     //!\brief Returns the information of valid file extensions.
@@ -848,9 +839,8 @@ public:
         {
             if (!dir_exists)
             {
-                detail::safe_filesystem_entry dir_guard{dir};
                 validate_writeability(dir / "dummy.txt");
-                dir_guard.remove_all();
+                std::filesystem::remove_all(dir);
             }
             else
             {
