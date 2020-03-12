@@ -19,7 +19,6 @@
 #include <seqan3/argument_parser/auxiliary.hpp>
 #include <seqan3/argument_parser/detail/range_free.hpp>
 #include <seqan3/argument_parser/exceptions.hpp>
-#include <seqan3/core/type_list/traits.hpp>
 #include <seqan3/core/type_traits/basic.hpp>
 #include <seqan3/io/detail/misc.hpp>
 #include <seqan3/io/detail/safe_filesystem_entry.hpp>
