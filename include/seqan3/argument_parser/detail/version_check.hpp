@@ -253,14 +253,11 @@ public:
         // check if files can be written inside dir
         path dummy = tmp_path / "dummy.txt";
         std::ofstream file{dummy};
-        detail::safe_filesystem_entry file_guard{dummy};
-
-        bool is_open = file.is_open();
-        bool is_good = file.good();
+        bool write_permissions = file.is_open() && file.good();
         file.close();
-        file_guard.remove_no_throw();
+        std::filesystem::remove(dummy);
 
-        if (!is_good || !is_open) // no write permissions
+        if (!write_permissions) // no write permissions
         {
             tmp_path.clear(); // empty path signals no available directory to write to, version check will not be done
         }
