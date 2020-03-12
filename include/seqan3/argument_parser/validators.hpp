@@ -270,11 +270,11 @@ private:
  * \{
  */
 //!\brief Deduction guide for a parameter pack over an arithmetic type.
-template <typename ...option_types>
+template <typename option_type, typename ...option_types>
 //!\cond
-    requires (std::is_arithmetic_v<option_types> && ...)
+    requires (std::is_arithmetic_v<option_types> && ... && std::is_arithmetic_v<option_type>)
 //!\endcond
-value_list_validator(option_types...) -> value_list_validator<double>;
+value_list_validator(option_type, option_types...) -> value_list_validator<double>;
 
 //!\brief Deduction guide for ranges over an arithmetic type.
 template <std::ranges::forward_range range_type>
@@ -284,11 +284,12 @@ template <std::ranges::forward_range range_type>
 value_list_validator(range_type && rng) -> value_list_validator<double>;
 
 //!\brief Given a parameter pack of types that are convertible to std::string, delegate to value type std::string.
-template <typename ...option_types>
+template <typename option_type, typename ...option_types>
 //!\cond
-    requires (std::constructible_from<std::string, option_types> && ...)
+    requires (std::constructible_from<std::string, option_types> && ... &&
+              std::constructible_from<std::string, option_type>)
 //!\endcond
-value_list_validator(option_types...) -> value_list_validator<std::string>;
+value_list_validator(option_type, option_types...) -> value_list_validator<std::string>;
 
 //!\brief Deduction guide for ranges over a value type convertible to std::string.
 template <std::ranges::forward_range range_type>
@@ -298,8 +299,8 @@ template <std::ranges::forward_range range_type>
 value_list_validator(range_type && rng) -> value_list_validator<std::string>;
 
 //!\brief Deduction guide for a parameter pack.
-template <typename ...option_types>
-value_list_validator(option_types...) -> value_list_validator<seqan3::pack_traits::front<option_types...>>;
+template <typename option_type, typename ...option_types>
+value_list_validator(option_type, option_types ...) -> value_list_validator<option_type>;
 
 //!\brief Deduction guide for ranges.
 template <std::ranges::forward_range range_type>
