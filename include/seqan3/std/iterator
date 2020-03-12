@@ -15,7 +15,9 @@
 
 #include <iterator>
 
-#ifndef __cpp_lib_ranges
+#if defined(__cpp_lib_ranges)
+#elif __has_include(<stl2/iterator.hpp>)
+#else
 
 #ifndef RANGES_DEEP_STL_INTEGRATION
 #define RANGES_DEEP_STL_INTEGRATION 1
