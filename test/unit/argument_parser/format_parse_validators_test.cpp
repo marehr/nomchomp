@@ -13,6 +13,7 @@
 
 #include <seqan3/argument_parser/argument_parser.hpp>
 #include <seqan3/test/tmp_filename.hpp>
+#include <seqan3/core/detail/type_inspection.hpp>
 
 struct dummy_file
 {
@@ -837,8 +838,18 @@ TEST(validator_test, value_list_validator_success)
     EXPECT_TRUE((std::same_as<seqan3::value_list_validator<int>,
                  decltype(seqan3::value_list_validator{v | std::views::take(2)})>));
     std::vector v_char{'1', '2', '3'};
+
+    seqan3::value_list_validator a{v};
+    seqan3::value_list_validator b{v_char};
+    [[maybe_unused]] auto c = a | b;
+    std::cout << "a: " << seqan3::detail::type_name_as_string<decltype(a)> << std::endl;
+    std::cout << "b: " << seqan3::detail::type_name_as_string<decltype(b)> << std::endl;
+    std::cout << "c: " << seqan3::detail::type_name_as_string<decltype(c)> << std::endl;
+    std::cout << "c: " << seqan3::detail::type_name_as_string<decltype(c)::option_value_type> << std::endl;
     EXPECT_TRUE((std::same_as<seqan3::value_list_validator<char>,
-                 decltype(seqan3::value_list_validator{v_char})>));
+                 decltype(seqan3::value_list_validator{v_char})>)) << "TEST";
+    std::cout << "hoo: " << seqan3::detail::type_name_as_string<decltype(v_char)> << std::endl;
+    std::cout << "hoo: " << seqan3::detail::type_name_as_string<decltype(seqan3::value_list_validator{v_char})> << std::endl;
     EXPECT_TRUE((std::same_as<seqan3::value_list_validator<char>,
                  decltype(seqan3::value_list_validator{v_char | std::views::take(2)})>));
     // const char * is deduced to std::string
