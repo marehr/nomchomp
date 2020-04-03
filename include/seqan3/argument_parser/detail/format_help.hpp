@@ -42,6 +42,7 @@ class format_help : public format_help_base<format_help>
 
     //!\brief Befriend the base class to give access to the private member functions.
     friend base_type;
+
 public:
     /*!\name Constructors, destructor and assignment
      * \{

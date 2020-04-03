@@ -13,7 +13,6 @@
 
 #include <seqan3/argument_parser/argument_parser.hpp>
 #include <seqan3/test/tmp_filename.hpp>
-#include <seqan3/core/detail/type_inspection.hpp>
 
 struct dummy_file
 {
