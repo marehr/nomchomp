@@ -50,4 +50,4 @@ seqan3_require_test ()
 add_subdirectories ()
 
 list_missing_unit_tests()
-list_unused_unit_tests ()
+# list_unused_unit_tests ()
